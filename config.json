@@ -1,0 +1,215 @@
+{
+  "app_version": 1,
+  "couple_info": {
+    "boy_name": "Rivishan",
+    "girl_name": "Anuki",
+    "boy_nickname": "මගේ පණ",
+    "girl_nickname": "මගේ මැණික",
+    "boy_dob": "2005-10-03",
+    "girl_dob": "2006-10-21",
+    "anniversary_date": "2023-01-17 00:00:00",
+    "age_gap_text": "රිවිශාන් ඔයාට වඩා අවුරුද්දයි දවස් 18ක් (දවස් 383ක්) වැඩිමල්"
+  },
+  "security": {
+    "main_pin": "20230117",
+    "safe_guest_pin": "00000000",
+    "lock_quote": "අපේ ආදර කතාව පටන් ගත්ත ඒ සුන්දර දිනය ඇතුළත් කරන්න...",
+    "wrong_pin_messages": [
+      "අපෝ... අපි දෙන්නා යාළු වුණ දවසත් අමතක වුණාද මගේ මැණිකට? ආයේ හොඳට මතක් කරලා ගහන්නකෝ බලන්න.",
+      "හරි හරි, පොඩි ඉඟියක් දෙන්නම්... 2023 අවුරුද්දේ මුල්ම මාසේ, මගේ ජීවිතේ ලස්සනම වුණු දවස!",
+      "අනුකි බබා හිතාමතාම මාව අවුස්සන්න නේද හදන්නේ? ඉක්මනට හරි දවස ගහලා ඇතුළට එන්නකෝ, මම බලන් ඉන්නවා.",
+      "තාමත් මතක් වුණේ නැද්ද? පහළ තියෙන Voice Hint බටන් එක ඔබලා මගේ කටහඬ අහන්නකෝ!"
+    ],
+    "voice_hint_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/voice/pin_hint.mp3"
+  },
+  "theme_engine": {
+    "mode": "auto",
+    "custom_primary_color": "#D81B60",
+    "custom_secondary_color": "#880E4F",
+    "custom_bg_color": "#FFF0F5",
+    "custom_card_color": "#FFFFFF",
+    "custom_text_color": "#212121",
+    "card_corner_radius": 24,
+    "falling_particle_type": "hearts",
+    "custom_wallpaper_url": "",
+    "header_title": "Happy Advance Birthday My Queen Anuki!",
+    "header_subtitle": "Rivishan & Anuki | Since 2023.01.17"
+  },
+  "feature_toggles": {
+    "show_birthday_cake": true,
+    "show_scratch_card": true,
+    "show_time_vaults": true,
+    "show_mood_tracker": true,
+    "show_envelopes": true,
+    "show_coupons": true,
+    "show_quiz": true,
+    "show_love_plant": true,
+    "show_bucket_list": true,
+    "love_bomb_mode": false
+  },
+  "live_popup": {
+    "popup_id": 1,
+    "enabled": false,
+    "title": "Surprise Message",
+    "message": "මම දැන් ඔයා ගැනමයි හිත හිත ඉන්නේ අනුකි...",
+    "trigger_heartbeat_vibration": true
+  },
+  "notification": {
+    "notif_id": 1,
+    "title": "Rivishan ගෙන් විශේෂ පණිවිඩයක්",
+    "message": "අද අපේ ආදරේට තවත් මාසයක් පිරෙන දවස... App එක Open කරලා බලන්නකෝ!"
+  },
+  "auto_pilot": {
+    "daily_note": "2023 ජනවාරි 17 ඉඳන් අද වෙනකම්ම මගේ ජීවිතේ ලස්සනම තෑග්ග ඔයායි අනුකි. ඔක්තෝබර් 21 එන ඔයාගේ උපන්දිනයට මම ගොඩක් ආසාවෙන් බලන් ඉන්නේ! - ඔයාගේ රිවිශාන්",
+    "love_bomb_message": "මගේ මැණික, ඔයා මාත් එක්ක තරහින් හෝ දුකින් ඉන්නවා නම් මට සමාවෙන්න. මේ ලෝකේ මට වටිනාම වස්තුව ඔයා විතරමයි!",
+    "meal_morning": "සුබ උදෑසනක් මගේ මැණික! උදේට හොඳට කෑම කාලා දවසේ වැඩ පටන් ගන්න හොඳද.",
+    "meal_lunch": "දැන් දවල් කෑම වෙලාව හරි පණ... බඩගින්නේ ඉන්නේ නැතුව වෙලාවට කෑම කන්න.",
+    "meal_night": "මගේ හොඳ කෙල්ල වගේ රෑට කෑම කෑවාද? වතුරත් හොඳට බොන්න.",
+    "late_night_msg": "තාම නිදි නැද්ද මගේ පණ? මාව මතක් වෙලා නින්ද යන්නේ නැදද? දැන් ඇස් දෙක පියාගෙන සැනසීමෙන් නිදාගන්න.",
+    "missed_you_msg": "පැය ගාණකින් ඔයා මේ පැත්තේ ආවේ නැති නිසා මම ගොඩක් පාළුවෙන් බලන් හිටියේ මැණික...",
+    "hourly_thoughts": [
+      "මේ වෙලාවේ මම ඔයාගේ ලස්සන හිනාව ගැන හිත හිත ඉන්නේ.",
+      "ඔයා දැන් මොකද කරන්නේ කියලා බලන්න මට ගොඩක් ආසයි.",
+      "අපි දෙන්නා මුලින්ම හම්බවුණු දවස මට දැන් මතක් වුණා.",
+      "ඔයාගේ කටහඬ අහන්න තියෙනවා නම් කියලා හිතෙනවා.",
+      "මගේ අනාගතේ හැම හීනයකම ඉන්නේ ඔයා විතරයි අනුකි."
+    ],
+    "auto_message_pool": [
+      "ඔයා මගේ ජීවිතේට ආපු දවසේ ඉඳන් හැමදේම ලස්සන වුණා.",
+      "මොන ප්‍රශ්න ආවත් මම හැමදාම ඔයාගේ අත අල්ලගෙන ඉන්නවා.",
+      "ඔයා හිනාවෙලා ඉන්නකොට තමයි මගේ හිතට ලොකුම සැනසීම දැනෙන්නේ.",
+      "2023 ජනවාරි 17 කියන්නේ මම අලුතින් ඉපදුණු දවස."
+    ]
+  },
+  "media": {
+    "bg_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/bg_song.mp3",
+    "birthday_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/bday_song.mp3",
+    "avurudu_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/avurudu.mp3",
+    "voice_note_title": "Rivishan ගේ ආදරණීය හඬ පණිවිඩය",
+    "voice_note_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/voice/love_voice.mp3",
+    "song_lyrics": [
+      "නුඹේ සිනහව මගේ ලෝකයම එළිය කරයි...",
+      "සංසාරේ පුරාවටම මගේම වී ඉන්න...",
+      "රිවිශාන්ගේ හදවත ගැහෙන්නේ අනුකි වෙනුවෙන්මයි..."
+    ]
+  },
+  "time_vaults": [
+    {
+      "id": "bday_2026",
+      "title": "Anuki's Birthday Midnight Box",
+      "unlock_date": "2026-10-21 00:00:00",
+      "locked_hint": "ඔක්තෝබර් 21 රෑ 12:00 වෙනකම් ඉවසන්න මගේ Birthday Queen!",
+      "secret_title": "සුබම සුබ උපන්දිනයක් මගේ පණ!",
+      "secret_message": "2006 ඔක්තෝබර් 21 වෙනිදා තමයි මගේ ලෝකේ රැජින මේ ලෝකෙට ආවේ. ඔයාගේ හැම හීනයක්ම හැබෑ වෙන ලස්සනම අවුරුද්දක් වේවා!",
+      "secret_image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/bday_surprise.jpg"
+    },
+    {
+      "id": "anniversary_vault",
+      "title": "January 17 Anniversary Vault",
+      "unlock_date": "2027-01-17 00:00:00",
+      "locked_hint": "අපේ මීළඟ ජනවාරි 17 සංවත්සරය දවසට මෙය විවෘත වේ.",
+      "secret_title": "Happy Anniversary My Love!",
+      "secret_message": "තවත් ලස්සන අවුරුද්දක් අපි එකට ආදරෙන් ගත කළා!",
+      "secret_image_url": ""
+    }
+  ],
+  "interactive": {
+    "scratch_card_text": "ඔයා තමයි මගේ ජීවිතේට ලැබුණු වටිනාම වස්තුව අනුකි! මම ඔයාට පණ වගේ ආදරෙයි.",
+    "scratch_card_image": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/secret_pic.jpg",
+    "love_reasons": [
+      "Reason #1: ඔයා මාත් එක්ක හිනාවෙද්දී ඇස් දෙක දිලිසෙන විදිහට මම ආදරෙයි.",
+      "Reason #2: මම දුකින් ඉන්න හැම වෙලාවකම ඔයා මගේ හිත හදන විදිහට මම ආදරෙයි.",
+      "Reason #3: ඔයාගේ හුරතල් කතාවලට සහ තරහා ගියාම මූණ හදාගන්න විදිහට මම ආදරෙයි.",
+      "Reason #4: මාව තේරුම් අරන් හැමදාම මගේ ළඟින්ම ඉන්න එකට මම ආදරෙයි."
+    ],
+    "fortune_cookies": [
+      "අද දවස ඇතුළත රිවිශාන්ගෙන් ඔයාට ලොකු Surprise එකක් ලැබේවි!",
+      "අපි දෙන්නා ඉක්මනටම ලස්සන ගමනක් යන්න නියමිතයි.",
+      "ඔයාගේ හිතේ තියෙන ලොකුම ප්‍රාර්ථනාවක් මේ මාසේදී ඉෂ්ට වෙනවා."
+    ],
+    "live_poll": {
+      "question_id": 1,
+      "question": "අපි දෙන්නා ඊළඟට හම්බවුණාම මොනවද කරන්න ආස?",
+      "options": ["Ice Cream කන්න යමු", "නිදහසේ කතා කර කර ඉමු", "ලස්සන Photos ගමු"]
+    },
+    "private_dictionary": [
+      {"word": "මැණික", "meaning": "රිවිශාන් අනුකිට ආදරේට කියන වටිනාම නම."},
+      {"word": "2023.01.17", "meaning": "දෙන්නාගේම ජීවිත වෙනස් වුණු ලස්සනම දවස."}
+    ],
+    "avurudu_special": {
+      "nekath_text": "බක්මහේ උදා වූ මේ සිංහල අලුත් අවුරුද්ද මගේ අවුරුදු කුමාරිට සතුට සැනසුම පිරි සුබ අලුත් අවුරුද්දක් වේවා!",
+      "ganudenu_note": "මේ අවුරුද්දේ මගේ ලොකුම ගනුදෙනුව ඔයාගේ ආදරණීය හදවතයි."
+    }
+  },
+  "memories": [
+    {
+      "date": "2023 January 17",
+      "title": "අපි දෙන්නා අපේ වුණු දවස",
+      "description": "රිවිශාන් සහ අනුකිගේ ආදර කතාව නිල වශයෙන් පටන් ගත්ත ඒ සුන්දරම දවස.",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/pic1.jpg"
+    },
+    {
+      "date": "October Special",
+      "title": "අපේ උපන්දින මාසය",
+      "description": "ඔක්තෝබර් 3 සහ ඔක්තෝබර් 21 කියන්නේ අපි දෙන්නා මේ ලෝකෙට ආපු ලස්සනම දවස් දෙක.",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/pic2.jpg"
+    }
+  ],
+  "envelopes": [
+    {
+      "title": "ඔයාට දුක හිතුණු වෙලාවට අරින්න",
+      "content": "මගේ මැණික, කිසිම දේකට හිත රිද්දගන්න එපා. ඇස් දෙක පියාගෙන මම ඔයාගේ ළඟින්ම ඉන්නවා කියලා හිතන්න. මම හැමදාම ඔයා එක්ක ඉන්නවා."
+    },
+    {
+      "title": "මාව ගොඩක් මතක් වෙන වෙලාවට අරින්න",
+      "content": "මටත් මේ තත්පරේ ඔයාව ගොඩක් මතක් වෙනවා පණ. පහළ තියෙන 'I Miss You' බටන් එක ඔබන්න, මම ඉක්මනටම ඔයාට කතා කරනවා."
+    },
+    {
+      "title": "මාත් එක්ක තරහා ගිය වෙලාවට අරින්න",
+      "content": "අනේ මගේ චූටි කෙල්ලට තරහා ගිහින් නේද? මගේ අතින් වරදක් වුණා නම් මට සමාවෙන්න. ඔයා තරහා වෙලා ඉද්දී මට ඉන්න බෑනේ."
+    },
+    {
+      "title": "ඔයාගේ Birthday එක දවසට අරින්න",
+      "content": "සුබ උපන්දිනයක් මගේ අනාගත මනමාලිට! 2006 ඔක්තෝබර් 21 ඉපදුණු ඔයා තමයි මගේ ජීවිතේ ලස්සනම ආශිර්වාදය."
+    }
+  ],
+  "coupons": [
+    {"id": "c1", "title": "Free Ice Cream & Treat Date", "desc": "ඕනෑම දවසක රිවිශාන්ගෙන් කැමති කෑමක් ඉල්ලීමේ බලපත්‍රය."},
+    {"id": "c2", "title": "Instant Forgiveness Pass", "desc": "තරහා වුණු වෙලාවක ප්‍රශ්න නොඅසා තත්පරෙන් යාළු කරගැනීමේ බලපත්‍රය."},
+    {"id": "c3", "title": "Unlimited Warm Hugs", "desc": "ඊළඟට හම්බවුණු ගමන් ලැබෙන ආදරණීය වැළඳගැනීමක්."},
+    {"id": "c4", "title": "Late Night Call Request", "desc": "නින්ද යනකම්ම කතා කර කර ඉන්න විශේෂ අවසර පත්‍රය."}
+  ],
+  "quiz": [
+    {
+      "q": "අපි දෙන්නා යාළු වුණු දිනය මොකක්ද?",
+      "options": ["2023 ජනවාරි 17", "2023 පෙබරවාරි 14", "2022 ඔක්තෝබර් 21"],
+      "answer_index": 0
+    },
+    {
+      "q": "රිවිශාන් අනුකිට වඩා කොච්චර වැඩිමල්ද?",
+      "options": ["අවුරුදු 2ක්", "අවුරුද්දයි දවස් 18ක්", "මාස 6ක්"],
+      "answer_index": 1
+    },
+    {
+      "q": "රිවිශාන් මේ ලෝකේ වැඩියෙන්ම ආදරේ කාටද?",
+      "options": ["අනුකිට විතරමයි", "කෑම වලට", "නිදාගන්න"],
+      "answer_index": 0
+    }
+  ],
+  "bucket_list": [
+    {"task": "එකට ලස්සන කඳුකර පැත්තක Trip එකක් යන්න", "done": false},
+    {"task": "Birthday එක දවසේ එකට කේක් කපන්න", "done": true},
+    {"task": "වැස්ස දවසක එක කුඩේ යටින් ඇවිදන් යන්න", "done": true},
+    {"task": "හැමදාම වෙන් නොවී එකටම ජීවත් වෙන්න", "done": false}
+  ],
+  "story_chapters": [
+    {
+      "chapter": "1 වන පරිච්ඡේදය: ආරම්භය",
+      "text": "2023 ජනවාරි 17 වෙනිදා තමයි අපේ ලස්සනම කතාව පටන් ගත්තේ..."
+    },
+    {
+      "chapter": "2 වන පරිච්ඡේදය: නොබිඳෙන බැඳීම",
+      "text": "ගෙවුණු හැම දවසක්ම අපි දෙන්නාව තව තවත් ළං කළා..."
+    }
+  ]
+}
