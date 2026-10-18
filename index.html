@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07040f">
+<meta name="theme-color" content="#07040f"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <title>Anuki ♥ Rivishan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600&family=Tilt+Neon&display=swap" rel="stylesheet">
@@ -14,10 +14,10 @@
 html,body{min-height:100%}
 body{background:var(--bg) center/cover fixed;color:var(--tx);font:15px/1.7 'Noto Sans Sinhala',system-ui,sans-serif}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 40% at 8% 0,var(--pg),transparent),radial-gradient(50% 40% at 100% 35%,var(--sg),transparent);opacity:.45}
-#fx{position:fixed;inset:0;pointer-events:none;z-index:2}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:0}#fx.top{z-index:3}
 .app{position:relative;z-index:1;max-width:560px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px 110px}
 header{text-align:center;padding:10px 0 4px}
-h1{font:400 30px/1.25 'Tilt Neon','Noto Sans Sinhala',sans-serif;color:#fff;text-shadow:0 0 5px #fff,0 0 14px var(--p),0 0 34px var(--p),0 0 64px var(--p);animation:fl 1.6s steps(1) 1}
+h1{font:400 30px/1.25 'Tilt Neon','Noto Sans Sinhala',sans-serif;color:#fff;text-shadow:0 0 5px #fff,0 0 14px var(--p),0 0 34px var(--p),0 0 64px var(--p)}h1.f1{animation:fl 1.6s steps(1) 1}
 @keyframes fl{0%,18%,22%,54%,58%{opacity:.35}20%,56%,100%{opacity:1}}
 .sub{color:var(--s);text-shadow:0 0 10px var(--s)}.nick{opacity:.85;margin-top:2px}
 .card{position:relative;background:color-mix(in srgb,var(--card) 85%,transparent);border:1.5px solid var(--p);border-radius:var(--r);padding:16px;margin:14px 0;box-shadow:0 0 12px var(--pg),inset 0 0 20px color-mix(in srgb,var(--p) 14%,transparent);backdrop-filter:blur(6px)}
@@ -42,9 +42,9 @@ textarea{width:100%;min-height:70px;background:#0003;color:var(--tx);border:1.5p
 .th:active{animation:bt .6s infinite}
 @keyframes bt{50%{transform:scale(1.12)}}
 .bomb{animation:bt 1.2s infinite;border-color:#fff}
-#cake .fl{transition:opacity .4s;filter:drop-shadow(0 0 5px #ffb52e)}#cake.off .fl{opacity:0}
+#cake .fl{transform-box:fill-box;transform-origin:50% 100%;animation:fk .45s ease-in-out infinite alternate;filter:drop-shadow(0 0 5px #ffb52e);transition:opacity .3s}@keyframes fk{to{transform:scale(.85,1.18)}}#cake.off .fl{opacity:0;animation:none}#cake .sm{opacity:0;fill:none;stroke:#fff9;stroke-width:1.6;transform-box:fill-box}#cake.off .sm{animation:sm 2.2s ease-out forwards}@keyframes sm{0%{opacity:.8;transform:translateY(0)}100%{opacity:0;transform:translateY(-24px)}}
 nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;background:#07040fee;border-top:1.5px solid var(--p);box-shadow:0 0 22px var(--pg);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;background:0;border:0;color:#a99bc4;font:inherit;font-size:12px;padding:9px 0 7px}
+nav button{flex:1;background:0;border:0;color:#a99bc4;font:inherit;font-size:11px;line-height:1.25;padding:8px 0 6px}
 nav button b{display:block;font-size:21px;filter:grayscale(1)}
 nav .on{color:#fff;text-shadow:0 0 10px var(--p)}nav .on b{filter:drop-shadow(0 0 7px var(--p))}
 #mu{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--s);background:#0008;color:#fff;box-shadow:0 0 10px var(--sg)}
@@ -56,7 +56,7 @@ nav .on{color:#fff;text-shadow:0 0 10px var(--p)}nav .on b{filter:drop-shadow(0 
 #pad button:active{background:var(--pg)}
 #wm{min-height:48px;max-width:330px;font-size:13px;color:var(--s)}
 #md{position:fixed;inset:0;z-index:30;background:#000b;display:grid;place-items:center;padding:20px}
-#ts{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-140%);z-index:40;max-width:90%;background:#130a24;border:1.5px solid var(--s);border-radius:16px;padding:10px 14px;box-shadow:0 0 16px var(--sg);transition:transform .4s}
+#ts{width:max-content;position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-140%);z-index:40;max-width:90%;background:#130a24;border:1.5px solid var(--s);border-radius:16px;padding:10px 14px;box-shadow:0 0 16px var(--sg);transition:transform .4s}
 #ts.on{transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
@@ -65,7 +65,7 @@ nav .on{color:#fff;text-shadow:0 0 10px var(--p)}nav .on b{filter:drop-shadow(0 
 <canvas id="fx"></canvas>
 <div id="lock">
   <h1 id="lt">♥</h1>
-  <p id="lq" style="max-width:320px;font-size:14px">...</p>
+  <p id="lq" style="max-width:320px;font-size:14px">...</p><p style="font-size:12px;opacity:.8">Enter the date our story began (YYYYMMDD) · අපේ දිනය ඇතුළත් කරන්න</p>
   <div id="dots"></div>
   <div id="pad"></div>
   <p id="wm"></p>
@@ -73,10 +73,10 @@ nav .on{color:#fff;text-shadow:0 0 10px var(--p)}nav .on b{filter:drop-shadow(0 
 </div>
 <main class="app" id="app" hidden></main>
 <nav id="nav" hidden>
-  <button data-t="home"><b>🏠</b>මුල</button>
-  <button data-t="us"><b>💞</b>අපි</button>
-  <button data-t="play"><b>🎮</b>සෙල්ලම්</button>
-  <button data-t="inbox"><b>💌</b>ලියුම්</button>
+  <button data-t="home"><b>🏠</b>Home<br>මුල</button>
+  <button data-t="us"><b>💞</b>Us<br>අපි</button>
+  <button data-t="play"><b>🎮</b>Play<br>සෙල්ලම්</button>
+  <button data-t="inbox"><b>💌</b>Inbox<br>ලියුම්</button>
 </nav>
 <button id="mu" hidden>🎵</button>
 <div id="md" hidden></div>
@@ -98,7 +98,7 @@ const cv=$('#fx'),cx=cv.getContext('2d');let W,H,ps=[],PT='hearts',CP='#ff2e93',
 const GL={hearts:'♥',stars:'✦',sparkles:'✧',erabadu:'✿',confetti:null};
 function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}addEventListener('resize',size);size();
 function mk(b){return{x:Math.random()*W,y:b?H*.45:-20,vx:b?(Math.random()-.5)*7:0,vy:b?-4-Math.random()*6:.6+Math.random()*1.3,s:12+Math.random()*14,r:Math.random()*6,c:Math.random()<.5?CP:CS,b}}
-function burst(n){for(let i=0;i<n;i++)ps.push(mk(true))}
+function burst(n){cv.classList.add('top');setTimeout(()=>cv.classList.remove('top'),3500);for(let i=0;i<n;i++)ps.push(mk(true))}
 function loop(){cx.clearRect(0,0,W,H);const g=PT in GL?GL[PT]:'♥';
  for(const p of ps){p.x+=p.vx+Math.sin(p.y/60+p.r)*.4;p.y+=p.vy;p.r+=.02;if(p.b)p.vy+=.14;else if(p.y>H+20){p.y=-20;p.x=Math.random()*W}
   cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=cx.shadowColor=p.c;cx.shadowBlur=10;
@@ -134,7 +134,7 @@ function enter(g){guest=g;prev=ls.g('seen',0);ls.s('seen',Date.now());$('#lock')
 function lockInit(){const S=C.security,t=C.theme_engine;$('#lt').textContent=t.header_title;$('#lq').textContent=S.lock_quote;dots()}
 
 /* ---------- popups ---------- */
-function modal(t,m){$('#md').innerHTML=`<div class="card"><h3>${esc(t)}</h3><p>${esc(m)}</p><button class="btn p" data-a="x">හරි 💖</button></div>`;$('#md').hidden=false}
+function modal(t,m){$('#md').innerHTML=`<div class="card"><h3>${esc(t)}</h3><p>${esc(m)}</p><button class="btn p" data-a="x">OK 💖 · හරි</button></div>`;$('#md').hidden=false}
 function popups(){const L=C.live_popup,Nn=C.notification;
  if(L.enabled&&ls.g('pop',0)!=L.popup_id){ls.s('pop',L.popup_id);modal(L.title,L.message);if(L.trigger_heartbeat_vibration)navigator.vibrate?.([200,100,200,100,500])}
  if(Nn.notif_id!=ls.g('nid',0)){ls.s('nid',Nn.notif_id);toast(Nn.title+' — '+Nn.message);try{Notification.permission=='granted'&&new Notification(Nn.title,{body:Nn.message})}catch{}}}
@@ -142,78 +142,84 @@ function popups(){const L=C.live_popup,Nn=C.notification;
 /* ---------- views ---------- */
 const card=(t,b,c='')=>`<section class="card ${c}">${t?`<h3>${t}</h3>`:''}${b}</section>`;
 function nowMsg(){const h=new Date().getHours(),A=C.auto_pilot;if(h>=5&&h<10)return A.meal_morning;if(h>=12&&h<15)return A.meal_lunch;if(h>=19&&h<22)return A.meal_night;if(h>=23||h<5)return A.late_night_msg;return A.hourly_thoughts[h%A.hourly_thoughts.length]}
-function bday(){const d=new Date(),b=new Date(C.couple_info.girl_dob),t0=new Date(d.getFullYear(),d.getMonth(),d.getDate());let n=new Date(d.getFullYear(),b.getMonth(),b.getDate());if(n<t0)n.setFullYear(n.getFullYear()+1);const k=Math.round((n-t0)/864e5);return k?`<div class="ct"><span class="big">${k}</span> දවසකින් ${esc(C.couple_info.girl_name)} ගේ උපන්දිනේ 🎂</div>`:`<div class="ct big" style="font-size:26px">අද උපන්දිනේ! 🎂💖</div>`}
-function tick(){const e=$('#tk');if(!e)return;const n=Date.now()-new Date(C.couple_info.anniversary_date.replace(' ','T')),f=(x,m)=>Math.floor(n/x)%m;e.innerHTML=`<span class="big">${Math.floor(n/864e5)}</span> දවස්<br><small>${f(36e5,24)} පැය ${f(6e4,60)} මිනිත්තු ${f(1e3,60)} තත්පර</small>`}
+function bday(){const d=new Date(),b={getMonth:()=>+C.couple_info.girl_dob.split('-')[1]-1,getDate:()=>+C.couple_info.girl_dob.split('-')[2]},t0=new Date(d.getFullYear(),d.getMonth(),d.getDate());let n=new Date(d.getFullYear(),b.getMonth(),b.getDate());if(n<t0)n.setFullYear(n.getFullYear()+1);const k=Math.round((n-t0)/864e5);return k?`<div class="ct"><span class="big">${k}</span> days until ${esc(C.couple_info.girl_name)}’s birthday 🎂<br><small>දවසකින් උපන්දිනේ</small></div>`:`<div class="ct big" style="font-size:26px">It’s your birthday today! 🎂💖<br><small>අද උපන්දිනේ!</small></div>`}
+function tick(){const e=$('#tk');if(!e)return;const n=Date.now()-new Date(C.couple_info.anniversary_date.replace(' ','T')),f=(x,m)=>Math.floor(n/x)%m;e.innerHTML=`<span class="big">${Math.floor(n/864e5)}</span> days · දවස්<br><small>${f(36e5,24)}h ${f(6e4,60)}m ${f(1e3,60)}s</small>`}
 setInterval(tick,1000);
 function cd(v){const k=Math.ceil((new Date(v.unlock_date.replace(' ','T'))-Date.now())/864e5);return k}
 const V={
 home(){const A=C.auto_pilot,T=C.feature_toggles,I=C.interactive.avurudu_special;let h='';
  if(T.love_bomb_mode)h+=card('💥 Love Bomb',`<p>${esc(A.love_bomb_message)}</p>`,'bomb');
- h+=card('අපි එකට ඉන්නේ',`<div id="tk" class="ct"></div><p>${esc(C.couple_info.age_gap_text)}</p>`);
+ h+=card('Together for · අපි එකට ඉන්නේ',`<div id="tk" class="ct"></div><p>${esc(C.couple_info.age_gap_text)}</p>`);
  if(guest)return h;
- if(prev&&Date.now()-prev>108e5)h+=card('😢',`<p>${esc(A.missed_you_msg)}</p>`,'c2');
- h+=card('උපන්දිනයට',bday(),'c2')+card('අද මගේ පණිවිඩේ',`<p>${esc(A.daily_note)}</p>`)+card('දැන් මේ වෙලාවේ',`<p>${esc(nowMsg())}</p>`,'c2');
- pool=pool||rnd(A.auto_message_pool);h+=card('',`<p id="pl">${esc(pool)}</p><button class="btn" data-a="pool">තව එකක් 💗</button>`);
- if(mode=='avurudu')h+=card('🌸 සුබ අලුත් අවුරුද්දක්',`<p>${esc(I.nekath_text)}</p><p style="margin-top:8px">${esc(I.ganudenu_note)}</p>`,'c2');
+ if(dip)h+=card('',`<button class="btn p" data-a="inst">📲 Install app · App එක install කරන්න</button>`);
+ if(prev&&Date.now()-prev>108e5)h+=card('😢 I missed you · මට ඔයාව මතක් වුණා',`<p>${esc(A.missed_you_msg)}</p>`,'c2');
+ h+=card('Birthday countdown · උපන්දිනයට',bday(),'c2')+card('Today’s note · අද මගේ පණිවිඩේ',`<p>${esc(A.daily_note)}</p>`)+card('Right now · දැන් මේ වෙලාවේ',`<p>${esc(nowMsg())}</p>`,'c2');
+ pool=pool||rnd(A.auto_message_pool);h+=card('',`<p id="pl">${esc(pool)}</p><button class="btn" data-a="pool">Another one · තව එකක් 💗</button>`);
+ if(mode=='avurudu')h+=card('🌸 Happy New Year · සුබ අලුත් අවුරුද්දක්',`<p>${esc(I.nekath_text)}</p><p style="margin-top:8px">${esc(I.ganudenu_note)}</p>`,'c2');
  return h},
 us(){const M=C.media,I=C.interactive;let h='';
  h+=C.memories.map(m=>card('',`<div class="mem">${m.image_url?`<img loading="lazy" src="${esc(m.image_url)}" alt="" onerror="this.remove()">`:''}<small>${esc(m.date)}</small><br><b>${esc(m.title)}</b><p>${esc(m.description)}</p></div>`)).join('');
  h+=C.story_chapters.map(s=>card(esc(s.chapter),`<p>${esc(s.text)}</p>`,'c2')).join('');
- h+=card('🎶 සින්දුවේ පද',M.song_lyrics.map(l=>`<p>${esc(l)}</p>`).join('')+`<button class="btn p" data-a="song">▶ සින්දුව අහන්න</button>`);
- h+=card('ඔයාට ආදරේ හේතු',`<p id="rs">${esc(rnd(I.love_reasons))}</p><button class="btn" data-a="rs">තව හේතුවක්</button>`,'c2');
- h+=card('අපේ වචන මාලාව',I.private_dictionary.map(d=>`<div class="it"><b>${esc(d.word)}</b><span>${esc(d.meaning)}</span></div>`).join(''));
+ h+=card('🎶 Our song · සින්දුවේ පද',M.song_lyrics.map(l=>`<p>${esc(l)}</p>`).join('')+`<button class="btn p" data-a="song">▶ Play song · සින්දුව අහන්න</button>`);
+ h+=card('Reasons I love you · ආදරේ හේතු',`<p id="rs">${esc(rnd(I.love_reasons))}</p><button class="btn" data-a="rs">Another reason · තව හේතුවක්</button>`,'c2');
+ h+=card('Our dictionary · අපේ වචන මාලාව',I.private_dictionary.map(d=>`<div class="it"><b>${esc(d.word)}</b><span>${esc(d.meaning)}</span></div>`).join(''));
  return h},
 play(){const T=C.feature_toggles,I=C.interactive;let h='';
- if(T.show_birthday_cake)h+=card('🎂 උපන්දින කේක්',`<svg id="cake" viewBox="0 0 200 150" width="220" style="display:block;margin:auto"><g fill="none" stroke-width="2.5"><rect x="30" y="100" width="140" height="35" rx="6" stroke="#ff2e93"/><rect x="50" y="68" width="100" height="32" rx="6" stroke="#19f0ff"/></g>${[80,100,120].map(x=>`<rect x="${x-2}" y="42" width="4" height="26" fill="#ffd23f"/><ellipse class="fl" cx="${x}" cy="35" rx="5" ry="8" fill="#ffb52e"/>`).join('')}</svg><div class="ct"><button class="btn p" data-a="blow">ඉටිපන්දම් පිඹින්න 💨</button></div>`);
- if(T.show_scratch_card)h+=card('🪙 සූරන කාඩ් එක',`<div class="sc"><div class="un"><p>${esc(I.scratch_card_text)}</p>${I.scratch_card_image?`<img src="${esc(I.scratch_card_image)}" alt="" onerror="this.remove()">`:''}</div><canvas id="scv" width="300" height="170"></canvas></div>`,'c2');
- h+=card('🥠 Fortune Cookie',`<p id="fc">ඔබලා බලන්න...</p><button class="btn" data-a="fc">කුකී එකක් කඩන්න</button>`);
+ if(T.show_birthday_cake)h+=card('🎂 Birthday cake · උපන්දින කේක්',`<svg id="cake" viewBox="0 0 220 170" width="250" style="display:block;margin:auto"><g stroke-width="2.5" stroke-linecap="round"><ellipse cx="110" cy="158" rx="92" ry="8" fill="none" stroke="#19f0ff"/><rect x="30" y="112" width="160" height="42" rx="8" fill="#ff2e9322" stroke="#ff2e93"/><rect x="52" y="80" width="116" height="32" rx="8" fill="#19f0ff1f" stroke="#19f0ff"/><rect x="74" y="54" width="72" height="26" rx="7" fill="#ff2e9322" stroke="#ff2e93"/><path d="M52 88q7 9 14 0t14 0t14 0t14 0t14 0t14 0t14 0t14 0" fill="none" stroke="#ffd23f"/></g>${[88,99,110,121,132].map(x=>`<rect x="${x-2}" y="38" width="4" height="16" rx="1" fill="#ffd23f"/><ellipse class="fl" cx="${x}" cy="31" rx="4" ry="7" fill="#ffb52e"/><path class="sm" d="M${x} 34q-4-6 0-11t0-9"/>`).join('')}</svg><p class="ct"><small>Blow into your mic, or tap the button · මයික් එකට පිඹින්න, නැත්නම් බටන් එක ඔබන්න</small></p><div class="ct"><button class="btn p" data-a="mic">🎤 Blow the candles · පිඹින්න</button><button class="btn" data-a="blow">Tap to blow 💨</button></div>`);
+ if(T.show_scratch_card)h+=card('🪙 Scratch card · සූරන කාඩ් එක',`<div class="sc"><div class="un"><p>${esc(I.scratch_card_text)}</p>${I.scratch_card_image?`<img src="${esc(I.scratch_card_image)}" alt="" onerror="this.remove()">`:''}</div><canvas id="scv" width="300" height="170"></canvas></div>`,'c2');
+ h+=card('🥠 Fortune cookie · වාසනා කුකී',`<p id="fc">Tap below to open one · ඔබලා බලන්න</p><button class="btn" data-a="fc">Crack a cookie · කුකී එකක් කඩන්න</button>`);
  const P=I.live_poll,ans=ls.g('poll'+P.question_id,'');
- h+=card('📊 '+esc(P.question),ans?`<p>ඔයාගේ පිළිතුර: <b>${esc(ans)}</b> 💖</p>`:P.options.map((o,i)=>`<button class="btn" data-a="poll" data-i="${i}">${esc(o)}</button>`).join(''),'c2');
- if(T.show_quiz)h+=card('🧠 අපේ Quiz',`<div id="qz">${qz()}</div>`);
- if(T.show_love_plant){const l=ls.g('pl',0);h+=card('🌱 ආදර පැළේ',`<div class="ct" id="pt" style="font-size:54px">${['🌱','🌿','🪴','🌷','🌹','🌸'][Math.min(5,Math.floor(l/2))]}</div><div class="ct"><button class="btn p" data-a="water">වතුර දාන්න 💧</button></div>`,'c2')}
- if(T.show_bucket_list)h+=card('✅ අපේ Bucket List',C.bucket_list.map(b=>`<div class="it"><span>${b.done?'✅':'⬜'} ${esc(b.task)}</span></div>`).join(''));
+ h+=card('📊 '+esc(P.question),ans?`<p>Your answer · ඔයාගේ පිළිතුර: <b>${esc(ans)}</b> 💖</p>`:P.options.map((o,i)=>`<button class="btn" data-a="poll" data-i="${i}">${esc(o)}</button>`).join(''),'c2');
+ if(T.show_quiz)h+=card('🧠 Our quiz · අපේ Quiz',`<div id="qz">${qz()}</div>`);
+ if(T.show_love_plant){const l=ls.g('pl',0);h+=card('🌱 Love plant · ආදර පැළේ',`<div class="ct" id="pt" style="font-size:54px">${['🌱','🌿','🪴','🌷','🌹','🌸'][Math.min(5,Math.floor(l/2))]}</div><div class="ct"><button class="btn p" data-a="water">Water it 💧 · වතුර දාන්න</button></div>`,'c2')}
+ if(T.show_bucket_list)h+=card('✅ Bucket list · අපේ ලැයිස්තුව',C.bucket_list.map(b=>`<div class="it"><span>${b.done?'✅':'⬜'} ${esc(b.task)}</span></div>`).join(''));
  return h},
 inbox(){const T=C.feature_toggles,M=C.media,used=ls.g('cp',[]);let h='';
- h+=card('💓 මගේ හදවත අල්ලන්න',`<div class="th" id="th">💗</div><p class="ct"><small>අල්ලගෙන ඉන්න — රිවිශාන්ට දැනෙනවා</small></p>`);
- h+=card('⚡ ඉක්මන් ආදරේ',[['💖','මම ඔයාට ආදරෙයි'],['🥺','මට ඔයාව මතක් වෙනවා'],['🤗','මට hug එකක් ඕනේ']].map(([e,t])=>`<button class="btn p" data-a="ql" data-v="${e} ${t}">${e} ${t}</button>`).join(''),'c2');
- if(T.show_mood_tracker)h+=card('😊 අද මගේ මනෝභාවේ',[['😊','සතුටුයි'],['🥰','ආදරෙයි'],['😴','මහන්සියි'],['😔','දුකයි'],['😡','තරහයි']].map(([e,t])=>`<button class="btn" data-a="mood" data-v="${e} ${t}">${e} ${t}</button>`).join(''));
- if(T.show_envelopes)h+=card('✉️ රහස් ලියුම්',C.envelopes.map((e,i)=>`<button class="btn" data-a="env" data-i="${i}">${esc(e.title)}</button>`).join('')+`<p id="ev" style="margin-top:10px"></p>`,'c2');
- if(T.show_coupons)h+=card('🎟️ ආදර කූපන්',C.coupons.map(c=>`<div class="it"><span><b>${esc(c.title)}</b><br><small>${esc(c.desc)}</small></span><button class="btn p" data-a="cp" data-i="${esc(c.id)}" ${used.includes(c.id)?'disabled':''}>${used.includes(c.id)?'පාවිච්චි කළා':'පාවිච්චි කරන්න'}</button></div>`).join(''));
- if(T.show_time_vaults)h+=card('🔐 Time Vaults',C.time_vaults.map(v=>{const k=cd(v);return k>0?`<div class="it"><span><b>${esc(v.title)}</b><br><small>${esc(v.locked_hint)}</small></span><span>🔒 ${k}d</span></div>`:`<div class="mem"><b>${esc(v.secret_title)}</b><p>${esc(v.secret_message)}</p>${v.secret_image_url?`<img loading="lazy" src="${esc(v.secret_image_url)}" alt="" onerror="this.remove()">`:''}</div>`}).join(''),'c2');
+ h+=card('💓 Touch my heart · හදවත අල්ලන්න',`<div class="th" id="th">💗</div><p class="ct"><small>Hold it — Rivishan can feel it · අල්ලගෙන ඉන්න</small></p>`);
+ h+=card('⚡ Quick love · ඉක්මන් ආදරේ',[['💖','I love you · මම ඔයාට ආදරෙයි'],['🥺','I miss you · මට ඔයාව මතක් වෙනවා'],['🤗','I need a hug · මට hug එකක් ඕනේ']].map(([e,t])=>`<button class="btn p" data-a="ql" data-v="${e} ${t}">${e} ${t}</button>`).join(''),'c2');
+ if(T.show_mood_tracker)h+=card('😊 My mood today · අද මනෝභාවේ',[['😊','Happy · සතුටුයි'],['🥰','Loved · ආදරෙයි'],['😴','Tired · මහන්සියි'],['😔','Sad · දුකයි'],['😡','Angry · තරහයි']].map(([e,t])=>`<button class="btn" data-a="mood" data-v="${e} ${t}">${e} ${t}</button>`).join(''));
+ if(T.show_envelopes)h+=card('✉️ Secret letters · රහස් ලියුම්',C.envelopes.map((e,i)=>`<button class="btn" data-a="env" data-i="${i}">${esc(e.title)}</button>`).join('')+`<p id="ev" style="margin-top:10px"></p>`,'c2');
+ if(T.show_coupons)h+=card('🎟️ Love coupons · ආදර කූපන්',C.coupons.map(c=>`<div class="it"><span><b>${esc(c.title)}</b><br><small>${esc(c.desc)}</small></span><button class="btn p" data-a="cp" data-i="${esc(c.id)}" ${used.includes(c.id)?'disabled':''}>${used.includes(c.id)?'Used · පාවිච්චි කළා':'Redeem · පාවිච්චි කරන්න'}</button></div>`).join(''));
+ if(T.show_time_vaults)h+=card('🔐 Time vaults · රහස් පෙට්ටි',C.time_vaults.map(v=>{const k=cd(v);return k>0?`<div class="it"><span><b>${esc(v.title)}</b><br><small>${esc(v.locked_hint)}</small></span><span>🔒 ${k}d</span></div>`:`<div class="mem"><b>${esc(v.secret_title)}</b><p>${esc(v.secret_message)}</p>${v.secret_image_url?`<img loading="lazy" src="${esc(v.secret_image_url)}" alt="" onerror="this.remove()">`:''}</div>`}).join(''),'c2');
  h+=card('🎙️ '+esc(M.voice_note_title),`<audio controls preload="none" src="${esc(M.voice_note_url)}" style="width:100%"></audio>`);
- h+=card('💌 රිවිශාන්ට පණිවිඩයක්',`<textarea id="rp" placeholder="මොනවා හරි ලියන්න..."></textarea><button class="btn p" data-a="rp">යවන්න</button>`,'c2');
- h+=card('⏳ කාල කැප්සියුලය',`<textarea id="tc" placeholder="අනාගතේට ලියන පණිවිඩයක්..."></textarea><button class="btn" data-a="tc">සඟවන්න</button>`);
+ h+=card('💌 Message Rivishan · රිවිශාන්ට පණිවිඩයක්',`<textarea id="rp" placeholder="Write something… · මොනවා හරි ලියන්න"></textarea><button class="btn p" data-a="rp">Send · යවන්න</button>`,'c2');
+ h+=card('⏳ Time capsule · කාල කැප්සියුලය',`<textarea id="tc" placeholder="A note for the future… · අනාගතේට ලියන පණිවිඩයක්"></textarea><button class="btn" data-a="tc">Seal it · සඟවන්න</button>`);
  return h}};
-function qz(){const Q=C.quiz;if(q.i>=Q.length)return `<p class="ct"><span class="big">${q.s}/${Q.length}</span><br>${q.s==Q.length?'පරිපූර්ණයි මගේ මැණික! 💖':'හොඳයි, ආයෙත් try කරමු 🥰'}</p><button class="btn" data-a="qr">ආයෙත්</button>`;const c=Q[q.i];return `<p>${esc(c.q)}</p>`+c.options.map((o,i)=>`<button class="btn" data-a="qa" data-i="${i}">${esc(o)}</button>`).join('')}
+function qz(){const Q=C.quiz;if(q.i>=Q.length)return `<p class="ct"><span class="big">${q.s}/${Q.length}</span><br>${q.s==Q.length?'Perfect, my gem! 💖 · පරිපූර්ණයි!':'Nice! Try again? 🥰 · ආයෙත් try කරමු'}</p><button class="btn" data-a="qr">Retry · ආයෙත්</button>`;const c=Q[q.i];return `<p>${esc(c.q)}</p>`+c.options.map((o,i)=>`<button class="btn" data-a="qa" data-i="${i}">${esc(o)}</button>`).join('')}
 function render(){if(!C)return;const t=C.theme_engine;
- $('#app').innerHTML=`<header><h1>${esc(t.header_title)}</h1><p class="sub">${esc(t.header_subtitle)}</p><p class="nick">${esc(C.couple_info.boy_nickname)} ♥ ${esc(C.couple_info.girl_nickname)}</p></header>`+V[guest?'home':tab]();
+ const f1=!render.d;render.d=1;$('#app').innerHTML=`<header><h1 class="${f1?'f1':''}">${esc(t.header_title)}</h1><p class="sub">${esc(t.header_subtitle)}</p><p class="nick">${esc(C.couple_info.boy_nickname)} ♥ ${esc(C.couple_info.girl_nickname)}</p></header>`+V[guest?'home':tab]();
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==tab));
  tick();if($('#scv'))scratch();const th=$('#th');if(th)th.onpointerdown=()=>{navigator.vibrate?.([60,80,60]);if(Date.now()-(th.l||0)>3e4){th.l=Date.now();post('touch_link')}}}
 
 /* ---------- scratch ---------- */
-function scratch(){const c=$('#scv'),x=c.getContext('2d');const g=x.createLinearGradient(0,0,300,170);g.addColorStop(0,CP);g.addColorStop(1,CS);x.fillStyle=g;x.fillRect(0,0,300,170);x.fillStyle='#fff';x.font='18px sans-serif';x.textAlign='center';x.fillText('සූරලා බලන්න ✨',150,90);
+function scratch(){const c=$('#scv'),x=c.getContext('2d');const g=x.createLinearGradient(0,0,300,170);g.addColorStop(0,CP);g.addColorStop(1,CS);x.fillStyle=g;x.fillRect(0,0,300,170);x.fillStyle='#fff';x.font='18px sans-serif';x.textAlign='center';x.fillText('Scratch me ✨ · සූරන්න',150,90);
  let d=0;const at=e=>{const r=c.getBoundingClientRect();x.globalCompositeOperation='destination-out';x.beginPath();x.arc((e.clientX-r.left)*300/r.width,(e.clientY-r.top)*170/r.height,18,0,7);x.fill()};
- c.onpointerdown=e=>{d=1;at(e)};c.onpointermove=e=>d&&at(e);
- c.onpointerup=()=>{d=0;const a=x.getImageData(0,0,300,170).data;let n=0;for(let i=3;i<a.length;i+=16)if(!a[i])n++;if(n>a.length/16*.5){c.classList.add('off');navigator.vibrate?.(80)}}}
+ c.onpointerdown=e=>{d=1;try{c.setPointerCapture(e.pointerId)}catch{}at(e)};c.onpointermove=e=>d&&at(e);
+ c.onpointerup=c.onpointercancel=()=>{d=0;const a=x.getImageData(0,0,300,170).data;let n=0;for(let i=3;i<a.length;i+=16)if(!a[i])n++;if(n>a.length/16*.5){c.classList.add('off');navigator.vibrate?.(80)}}}
 
 /* ---------- actions ---------- */
 const A={
- x(){$('#md').hidden=true},vh(){new Audio(C.security.voice_hint_url).play().catch(()=>toast('Voice hint එක තාම නෑ'))},
+ x(){$('#md').hidden=true},vh(){new Audio(C.security.voice_hint_url).play().catch(()=>toast('Voice hint not available yet · තාම නෑ'))},
  pool(){pool=rnd(C.auto_pilot.auto_message_pool);$('#pl').textContent=pool},
  rs(){$('#rs').textContent=rnd(C.interactive.love_reasons)},
- song(){play(C.media.bg_music_url,true);mOn=true;toast('🎶 සින්දුව වාදනය වෙනවා')},
- blow(){$('#cake').classList.add('off');burst(80);play(C.media.birthday_music_url,true);post('cake_blown');toast('🎉 සුබ උපන්දිනයක් මගේ රැජින!')},
+ song(){play(C.media.bg_music_url,true);mOn=true;toast('🎶 Playing · වාදනය වෙනවා')},
+ blow(){const c=$('#cake');if(!c||c.classList.contains('off'))return;c.querySelectorAll('.fl').forEach((f,i)=>f.style.transitionDelay=i*110+'ms');c.classList.add('off');burst(90);navigator.vibrate?.([80,40,80]);play(C.media.birthday_music_url,true);post('cake_blown');toast('🎉 Happy Birthday, my queen! · සුබ උපන්දිනයක්!')},
+ async mic(i,b){if(micOn)return;let st,ac,t;const end=()=>{clearInterval(t);st?.getTracks().forEach(k=>k.stop());ac?.close();micOn=0};
+  try{st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});ac=new(window.AudioContext||window.webkitAudioContext)();const an=ac.createAnalyser();an.fftSize=512;ac.createMediaStreamSource(st).connect(an);const d=new Uint8Array(an.fftSize);let n=0;micOn=1;b.textContent='🎤 Listening… blow now! · පිඹින්න!';
+   t=setInterval(()=>{if(!$('#cake'))return end();an.getByteTimeDomainData(d);let m=0;for(const v of d)m=Math.max(m,Math.abs(v-128));n=m>32?n+1:Math.max(0,n-1);if(n>=4){end();A.blow()}},60)}
+  catch{end();toast('Mic blocked — tap the button instead · මයික් එක allow කරන්න')}},
+ inst(){dip?.prompt();dip=null;render()},
  fc(){$('#fc').textContent=rnd(C.interactive.fortune_cookies)},
  poll(i){const P=C.interactive.live_poll,o=P.options[i];ls.s('poll'+P.question_id,o);post('poll_answer',o);render()},
- qa(i){const c=C.quiz[q.i];if(i==c.answer_index){q.s++;toast('✅ හරි!')}else toast('❌ නැහැ මැණික 😘');q.i++;$('#qz').innerHTML=qz()},
+ qa(i){const c=C.quiz[q.i];if(i==c.answer_index){q.s++;toast('✅ Correct! · හරි!')}else toast('❌ Not quite 😘 · නැහැ මැණික');q.i++;$('#qz').innerHTML=qz()},
  qr(){q={i:0,s:0};$('#qz').innerHTML=qz()},
- water(){const l=Math.min(10,ls.g('pl',0)+1);ls.s('pl',l);$('#pt').textContent=['🌱','🌿','🪴','🌷','🌹','🌸'][Math.min(5,Math.floor(l/2))];toast('💧 ස්තූතියි!')},
- ql(i,b){post('quick_love',b.dataset.v);toast('රිවිශාන්ට යැව්වා 💝');navigator.vibrate?.(80)},
- mood(i,b){post('mood_selected',b.dataset.v);toast('Mood එක යැව්වා')},
+ water(){const l=Math.min(10,ls.g('pl',0)+1);ls.s('pl',l);$('#pt').textContent=['🌱','🌿','🪴','🌷','🌹','🌸'][Math.min(5,Math.floor(l/2))];toast('💧 Thank you! · ස්තූතියි!')},
+ ql(i,b){post('quick_love',b.dataset.v);toast('Sent to Rivishan 💝 · යැව්වා');navigator.vibrate?.(80)},
+ mood(i,b){post('mood_selected',b.dataset.v);toast('Mood sent · යැව්වා')},
  env(i){const e=C.envelopes[i];$('#ev').textContent=e.content;post('envelope_opened',e.title)},
- cp(id,b){const u=ls.g('cp',[]);u.push(id);ls.s('cp',u);post('coupon_redeemed',(C.coupons.find(c=>c.id==id)||{}).title||id);b.disabled=true;b.textContent='පාවිච්චි කළා';toast('🎟️ කූපනය පාවිච්චි කළා!')},
- rp(){const v=$('#rp').value.trim();if(!v)return;post('direct_reply',v);$('#rp').value='';toast('💌 යැව්වා!')},
- tc(){const v=$('#tc').value.trim();if(!v)return;post('time_capsule',v);$('#tc').value='';toast('⏳ කැප්සියුලයේ සඟවලා')}};
+ cp(id,b){const u=ls.g('cp',[]);u.push(id);ls.s('cp',u);post('coupon_redeemed',(C.coupons.find(c=>c.id==id)||{}).title||id);b.disabled=true;b.textContent='Used · පාවිච්චි කළා';toast('🎟️ Coupon redeemed! · පාවිච්චි කළා')},
+ rp(){const v=$('#rp').value.trim();if(!v)return;post('direct_reply',v);$('#rp').value='';toast('💌 Sent! · යැව්වා')},
+ tc(){const v=$('#tc').value.trim();if(!v)return;post('time_capsule',v);$('#tc').value='';toast('⏳ Sealed in the capsule · සඟවලා')}};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a],[data-k],[data-t]');if(!b)return;
  if(b.dataset.k!==undefined)return press(b.dataset.k);
  if(b.dataset.t){tab=b.dataset.t;render();scrollTo(0,0);return}
@@ -221,7 +227,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a],[data-k
 document.addEventListener('visibilitychange',()=>{if(C&&!$('#lock').hidden===false)ls.s('seen',Date.now())});
 
 /* ---------- boot ---------- */
-(async()=>{await load();if(!C){$('#lq').textContent='config.json කියවන්න බැරි වුණා. Internet එක බලන්න.';return}theme();lockInit();
+let dip,micOn=0;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;if(C&&!$('#app').hidden&&tab=='home'&&!guest)render()});
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+(async()=>{await load();if(!C){$('#lq').textContent='Could not load config.json — check your internet · config.json කියවන්න බැරි වුණා';return}theme();lockInit();
  setInterval(async()=>{if(await load()){theme();lockInit();if(!$('#app').hidden){render();if(!guest)popups()}}},6e4)})();
 </script>
 </body>
