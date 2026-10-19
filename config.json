@@ -1,5 +1,5 @@
 {
-  "app_version": 7,
+  "app_version": 8,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -168,12 +168,6 @@
     }
   },
   "memories": [
-    {
-      "date": "2023 January 17",
-      "title": "Where Our Forever Began",
-      "description": "රිවිශාන් සහ අනුකිගේ ආදර කතාව නිල වශයෙන් පටන් ගත්ත, අපේ ජීවිත වෙනස් කරපු ඒ සුන්දරම දවස.",
-      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/pic1.jpg"
-    },
     {
       "date": "October Celebrations",
       "title": "Our Birthday Month (Oct 03 & Oct 21)",
