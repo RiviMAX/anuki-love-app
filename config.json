@@ -1,5 +1,5 @@
 {
-  "app_version": 6,
+  "app_version": 7,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -55,9 +55,9 @@
     "trigger_heartbeat_vibration": true
   },
   "notification": {
-    "notif_id": 1,
-    "title": "Message from Rivishan ❤️",
-    "message": "ජීවිතේ හැම දවසක්ම ඔයා නිසා ගොඩක් විශේෂයි. විවේකයක් ලැබුණු ගමන් App එක බලන්න."
+    "notif_id": 2,
+    "title": "Special Message from Rivishan ❤️",
+    "message": "Open the app and check your new surprise!"
   },
   "auto_pilot": {
     "daily_note": "2023 ජනවාරි 17 වෙනිදා ඉඳන් අද වෙනකම්ම මගේ ජීවිතේට ලැබුණු වටිනාම ආශිර්වාදය ඔයායි අනුකි. ඔක්තෝබර් 21 යෙදෙන ඔයාගේ උපන්දිනය වෙනුවෙන් මම ගොඩක් ආදරෙන් බලන් ඉන්නවා. — Always yours, Rivishan",
