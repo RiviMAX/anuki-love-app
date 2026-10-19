@@ -138,6 +138,7 @@ h1 {
 .card h3 {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   font-size: 15px;
   font-weight: 700;
@@ -151,6 +152,19 @@ h1 {
 .card p {
   color: color-mix(in srgb, var(--tx) 92%, transparent);
   font-size: 14.5px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  color: var(--s);
 }
 
 /* ---------- Counters & Typography ---------- */
@@ -288,6 +302,161 @@ textarea:focus {
 .it small {
   color: var(--muted);
   font-size: 12.5px;
+}
+
+/* ---------- 365-Day Love Plant Game UI ---------- */
+.plant-box {
+  background: radial-gradient(circle at 50% 25%, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.55));
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.plant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.plant-stage-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.plant-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.plant-stat {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  text-align: center;
+}
+
+.plant-stat small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.plant-stat b {
+  font-size: 13.5px;
+  color: #fff;
+}
+
+.meter-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.plant-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.plant-actions .btn {
+  margin: 0;
+  padding: 10px 8px;
+  font-size: 12.5px;
+  flex-direction: column;
+  gap: 3px;
+  border-radius: 14px;
+}
+
+.plant-actions .btn.done {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+}
+
+.plant-log {
+  font-size: 12.5px;
+  color: var(--s);
+  text-align: center;
+  margin-top: 8px;
+  min-height: 20px;
+}
+
+@keyframes leafSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+.svg-tree-group {
+  transform-origin: 130px 185px;
+  animation: leafSway 4.5s ease-in-out infinite;
+}
+
+@keyframes dropFall {
+  0% { opacity: 0.95; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(45px); }
+}
+
+.fx-drop {
+  animation: dropFall 1s ease-in infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.96); }
+  50% { opacity: 0.85; transform: scale(1.06); }
+}
+
+.fx-sun {
+  transform-origin: 215px 38px;
+  animation: sunPulse 2.5s ease-in-out infinite;
+}
+
+/* ---------- Weekly Poll & Coupon Banner ---------- */
+.status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(56, 189, 248, 0.09);
+  border: 1px solid var(--border-s);
+  font-size: 13px;
+}
+
+.picked-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--p-soft);
+  border: 1px solid var(--border-p);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #fff;
 }
 
 /* ---------- Interactive Widgets ---------- */
@@ -629,14 +798,29 @@ nav button.on b {
 <script>
 const RAW = 'https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/config.json';
 const HOOK = /vercel\.app|localhost/.test(location.hostname) ? '/api/webhook' : 'https://anuki-love-app.vercel.app/api/webhook';
+const WEEK_MS = 7 * 86400 * 1000;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ls = {
   g(k, d) { try { return JSON.parse(localStorage.getItem('al_' + k)) ?? d; } catch { return d; } },
-  s(k, v) { try { localStorage.setItem('al_' + k, JSON.stringify(v)); } catch {} }
+  s(k, v) { try { localStorage.setItem('al_' + k, JSON.stringify(v)); } catch {} },
+  rm(k) { try { localStorage.removeItem('al_' + k); } catch {} }
 };
 
-let C, raw = '', tab = 'home', guest = false, mode = 'love', pin = '', wr = 0, prev = 0, q = { i: 0, s: 0 }, pool = '';
+let C, raw = '', tab = 'home', guest = false, mode = 'love', pin = '', wr = 0, prev = 0, q = { i: 0, s: 0 }, pool = '', plantFx = '';
+
+const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const fmtRemaining = ms => {
+  if (ms <= 0) return 'Ready now!';
+  const d = Math.floor(ms / 864e5);
+  const h = Math.floor((ms % 864e5) / 36e5);
+  const m = Math.max(1, Math.floor((ms % 36e5) / 6e4));
+  return d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
 
 const post = (event, data = '') => {
   try {
@@ -668,11 +852,378 @@ async function load() {
         if (t === raw) return false;
         C = JSON.parse(t);
         raw = t;
+        checkRemoteReset();
         return true;
       }
     } catch {}
   }
   return false;
+}
+
+/* ---------- Remote /resetapp Sync Handler ---------- */
+function checkRemoteReset() {
+  if (!C) return;
+  const sys = C.system_reset;
+  if (sys && sys.reset_id && sys.reset_id !== ls.g('rst_id', 0)) {
+    ls.s('rst_id', sys.reset_id);
+    const t = (sys.target || 'all').toLowerCase();
+    if (t === 'all' || t === 'poll') {
+      ls.rm('poll_v2');
+      if (C.interactive?.live_poll?.question_id) ls.rm('poll' + C.interactive.live_poll.question_id);
+    }
+    if (t === 'all' || t === 'coupons') {
+      ls.rm('cp_v2');
+      ls.rm('cp');
+    }
+    if (t === 'all' || t === 'plant') {
+      ls.rm('plant_v2');
+      ls.rm('pl');
+    }
+    if (t === 'all') {
+      q = { i: 0, s: 0 };
+    }
+    if (!$('#lock').hidden === false) {
+      toast(`🔄 App ${t.toUpperCase()} state has been reset!`);
+    }
+  }
+
+  // Check remote plant boost or level override from webhook.js
+  const ps = C.plant_state;
+  if (ps) {
+    const p = getPlantState();
+    let changed = false;
+    if (ps.sync_id && ps.sync_id !== p.syncId) {
+      p.syncId = ps.sync_id;
+      if (ps.override_day) p.daysCared = Math.min(365, Math.max(1, ps.override_day));
+      if (ps.override_xp !== undefined) p.xp = ps.override_xp;
+      changed = true;
+    }
+    if (ps.boost_id && ps.boost_id !== p.boostId) {
+      p.boostId = ps.boost_id;
+      p.xp += 50;
+      p.microGrowth = (p.microGrowth || 0) + 2;
+      p.waterDate = p.sunDate = p.fertDate = todayKey();
+      p.lastLog = ps.boost_msg || '💖 Rivishan sent a +50 XP Love Boost to our plant!';
+      changed = true;
+      if ($('#lock').hidden) toast(p.lastLog);
+    }
+    if (changed) ls.s('plant_v2', p);
+  }
+}
+
+/* ---------- 1. Weekly 2-Pick Date Activity Poll Logic ---------- */
+function getPollState() {
+  const P = C.interactive?.live_poll || { question_id: 1, question: '', options: [] };
+  let st = ls.g('poll_v2', null);
+  if (!st || st.qid !== P.question_id) {
+    st = { qid: P.question_id, weekStart: 0, currentPicks: [], historyPicks: [] };
+  }
+  // Check if 7 days have passed since the weekly picks were completed
+  if (st.weekStart && Date.now() - st.weekStart >= WEEK_MS) {
+    for (const pick of st.currentPicks) {
+      if (!st.historyPicks.includes(pick)) st.historyPicks.push(pick);
+    }
+    st.currentPicks = [];
+    st.weekStart = 0;
+    ls.s('poll_v2', st);
+  }
+  return st;
+}
+
+function renderWeeklyPoll() {
+  const P = C.interactive?.live_poll;
+  if (!P || !P.question || !P.options?.length) return '';
+  const st = getPollState();
+
+  // Filter options that haven't been picked in previous weeks
+  let unpickedPool = P.options.filter(o => !st.historyPicks.includes(o));
+  // If fewer than 2 unpicked options remain and she hasn't started picking this week, reset history cycle so she always has choices
+  if (unpickedPool.length < 2 && st.currentPicks.length === 0) {
+    st.historyPicks = [];
+    ls.s('poll_v2', st);
+    unpickedPool = [...P.options];
+  }
+
+  const pickedCount = st.currentPicks.length;
+  const isLocked = pickedCount >= 2 && st.weekStart && (Date.now() - st.weekStart < WEEK_MS);
+  const remMs = isLocked ? (WEEK_MS - (Date.now() - st.weekStart)) : 0;
+
+  let html = `<div class="status-banner">
+    <span>🗓️ <b>Weekly Pick:</b> ${pickedCount} / 2 selected</span>
+    <span style="color:var(--s);font-weight:600">${isLocked ? `⏳ Resets in ${fmtRemaining(remMs)}` : `✨ Pick ${2 - pickedCount} more`}</span>
+  </div>`;
+
+  if (pickedCount > 0) {
+    html += `<div style="margin-bottom:10px">` +
+      st.currentPicks.map((ans, idx) => `<div class="picked-pill"><span>✅ Choice #${idx + 1}:</span> <span>${esc(ans)}</span></div>`).join('') +
+      `</div>`;
+  }
+
+  if (!isLocked) {
+    const availableToClick = unpickedPool.filter(o => !st.currentPicks.includes(o));
+    html += `<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select ${pickedCount === 0 ? '2 activities' : '1 more activity'} for our next date (resets every 7 days):</p>`;
+    html += `<div>` + availableToClick.map(o => {
+      const origIdx = P.options.indexOf(o);
+      return `<button class="btn" data-a="poll" data-i="${origIdx}">${esc(o)}</button>`;
+    }).join('') + `</div>`;
+  } else {
+    html += `<p style="font-size:13px;color:var(--muted);text-align:center;margin-top:4px">💖 Your 2 picks for this week are sent to Rivishan! Next week you can pick 2 new activities.</p>`;
+  }
+
+  return card(`<span>📊 ${esc(P.question)}</span><span class="badge">2 / Week</span>`, html, 'c2');
+}
+
+/* ---------- 2. 365-Day Interactive Love Plant Game Logic ---------- */
+const PLANT_STAGES = [
+  { min: 1, max: 7, name: 'Tiny Love Seed 🌱', sub: 'A new beginning taking root' },
+  { min: 8, max: 30, name: 'Tender Sprout 🌿', sub: 'Growing stronger with daily care' },
+  { min: 31, max: 90, name: 'Leafy Sapling 🪴', sub: 'Deep roots & vibrant green leaves' },
+  { min: 91, max: 180, name: 'Budding Rose Bush 🌷', sub: 'Sweet buds forming on every branch' },
+  { min: 181, max: 270, name: 'Blooming Love Tree 🌹', sub: 'Blossoming with romance & warmth' },
+  { min: 271, max: 364, name: 'Golden Blossom Tree 🌸', sub: 'Radiant canopy of endless love' },
+  { min: 365, max: 365, name: 'Eternal 365 Love Tree 🌳💖', sub: 'A full year of unwavering love!' }
+];
+
+function getPlantState() {
+  const tk = todayKey();
+  let p = ls.g('plant_v2', null);
+  if (!p) {
+    const legacy = ls.g('pl', 0);
+    p = {
+      daysCared: Math.max(1, legacy),
+      xp: legacy * 25,
+      microGrowth: legacy,
+      lastCareDate: '',
+      waterDate: '',
+      sunDate: '',
+      fertDate: '',
+      lastLog: 'Care for our plant with Water, Sunlight & Fertilizer every day!',
+      syncId: 0,
+      boostId: 0
+    };
+    ls.s('plant_v2', p);
+  }
+  return p;
+}
+
+function getPlantStage(day) {
+  return PLANT_STAGES.find(s => day >= s.min && day <= s.max) || PLANT_STAGES[PLANT_STAGES.length - 1];
+}
+
+function buildPlantSvg(p) {
+  const tk = todayKey();
+  const hasW = p.waterDate === tk;
+  const hasS = p.sunDate === tk;
+  const hasF = p.fertDate === tk;
+
+  const day = Math.min(365, Math.max(1, p.daysCared || 1));
+  const micro = p.microGrowth || 0;
+  // Continuous growth ratio from 0.0 (Day 1) to 1.0 (Day 365) + micro growth per click
+  const prog = Math.min(1, (day - 1) / 364 + (micro % 10) * 0.0025);
+
+  const stemH = Math.round(28 + prog * 112); // grows from 28px to 140px
+  const topY = 182 - stemH;
+  const trunkW = (2.8 + prog * 9.5).toFixed(1);
+
+  // Leaf count scales with days & micro actions so every care shows a change
+  const leafCount = Math.min(26, 2 + Math.floor(day / 12) + Math.floor(micro / 2));
+  let leavesSvg = '';
+  for (let i = 0; i < leafCount; i++) {
+    const frac = (i + 1) / (leafCount + 1);
+    const ly = 180 - frac * (stemH - 8);
+    const side = i % 2 === 0 ? 1 : -1;
+    const spread = 10 + frac * (14 + prog * 38);
+    const lx = 130 + side * spread;
+    const rot = side * (25 - frac * 10);
+    const lSize = (5.5 + prog * 5 + (i % 3)).toFixed(1);
+    const leafCol = i % 3 === 0 ? '#4ade80' : i % 2 === 0 ? '#22c55e' : '#16a34a';
+    leavesSvg += `<path d="M130 ${ly + 4} Q${130 + side * (spread * 0.5)} ${ly - 4} ${lx} ${ly}" stroke="#15803d" stroke-width="${Math.max(1.2, trunkW * 0.28)}" fill="none" stroke-linecap="round"/>`;
+    leavesSvg += `<ellipse cx="${lx}" cy="${ly}" rx="${lSize}" ry="${(lSize * 0.58).toFixed(1)}" transform="rotate(${rot} ${lx} ${ly})" fill="${leafCol}"/>`;
+  }
+
+  // Canopy / Crown for mid-to-high stages (Day 20+)
+  let canopySvg = '';
+  if (day >= 15 || micro >= 6) {
+    const cR = Math.min(54, 14 + prog * 42 + (micro % 5));
+    canopySvg = `
+      <circle cx="130" cy="${topY}" r="${cR}" fill="rgba(34,197,94,0.22)"/>
+      <circle cx="${130 - cR * 0.45}" cy="${topY + 8}" r="${cR * 0.72}" fill="rgba(22,163,74,0.28)"/>
+      <circle cx="${130 + cR * 0.45}" cy="${topY + 8}" r="${cR * 0.72}" fill="rgba(74,222,128,0.24)"/>
+    `;
+  }
+
+  // Buds, Flowers & Glowing Hearts based on XP and Days
+  const flowerCount = Math.min(18, Math.floor(day / 20) + Math.floor((p.xp || 0) / 45));
+  let bloomsSvg = '';
+  for (let j = 0; j < flowerCount; j++) {
+    const angle = (j * 137.5) * (Math.PI / 180);
+    const rad = 8 + (j % 4) * (6 + prog * 8);
+    const fx = (130 + Math.cos(angle) * rad).toFixed(1);
+    const fy = (topY + 10 + Math.sin(angle) * (rad * 0.7)).toFixed(1);
+    const col = j % 3 === 0 ? '#fb7185' : j % 2 === 0 ? '#f43f5e' : '#facc15';
+    bloomsSvg += `<circle cx="${fx}" cy="${fy}" r="${(3.2 + (j % 2) * 1.3).toFixed(1)}" fill="${col}" stroke="#fff" stroke-width="0.6"/>`;
+  }
+
+  // Top tip bud / heart blossom
+  const tipBloom = day >= 5 || micro >= 2
+    ? `<text x="130" y="${topY - 6}" text-anchor="middle" font-size="${Math.round(13 + prog * 10)}">${day >= 180 ? '🌸' : day >= 60 ? '🌹' : '🌱'}</text>`
+    : '';
+
+  // Active Sun, Water & Fertilizer Visual Effects
+  const sunSvg = (hasS || plantFx === 'sun') ? `
+    <g class="fx-sun">
+      <circle cx="220" cy="34" r="16" fill="#facc15" opacity="0.9"/>
+      <circle cx="220" cy="34" r="24" fill="rgba(250,204,21,0.25)"/>
+    </g>` : `<circle cx="220" cy="34" r="11" fill="rgba(250,204,21,0.25)"/>`;
+
+  const waterSvg = (plantFx === 'water') ? `
+    <g class="fx-drop" fill="#38bdf8">
+      <circle cx="115" cy="45" r="3.5"/><circle cx="130" cy="35" r="4"/><circle cx="145" cy="48" r="3.5"/>
+    </g>` : '';
+
+  const fertSvg = (hasF || plantFx === 'fert') ? `
+    <g fill="#facc15" opacity="0.85">
+      <circle cx="102" cy="182" r="2.2"/><circle cx="118" cy="185" r="2.5"/><circle cx="135" cy="183" r="2"/><circle cx="152" cy="185" r="2.5"/>
+    </g>` : '';
+
+  return `<svg viewBox="0 0 260 215" width="100%" height="205" style="display:block;margin:auto">
+    <defs>
+      <linearGradient id="potGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#e11d48"/>
+        <stop offset="100%" stop-color="#881337"/>
+      </linearGradient>
+      <linearGradient id="trunkGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#22c55e"/>
+        <stop offset="100%" stop-color="${day > 45 ? '#854d0e' : '#15803d'}"/>
+      </linearGradient>
+    </defs>
+    ${sunSvg}
+    ${waterSvg}
+    <g class="svg-tree-group">
+      ${canopySvg}
+      <!-- Main Stem / Trunk -->
+      <path d="M130 184 Q${130 - Math.round(prog * 8)} ${184 - Math.round(stemH * 0.5)} 130 ${topY}" stroke="url(#trunkGrad)" stroke-width="${trunkW}" fill="none" stroke-linecap="round"/>
+      ${leavesSvg}
+      ${bloomsSvg}
+      ${tipBloom}
+    </g>
+    <!-- Soil & Planter Pot -->
+    <ellipse cx="130" cy="184" rx="44" ry="7" fill="#3f271d" stroke="#5c3a21" stroke-width="1.5"/>
+    ${fertSvg}
+    <path d="M90 184 L170 184 L158 210 L102 210 Z" fill="url(#potGrad)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+    <text x="130" y="201" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">♥ DAY ${day}/365 ♥</text>
+  </svg>`;
+}
+
+function renderLovePlant() {
+  const p = getPlantState();
+  const tk = todayKey();
+  const day = Math.min(365, Math.max(1, p.daysCared || 1));
+  const stage = getPlantStage(day);
+
+  const hasW = p.waterDate === tk;
+  const hasS = p.sunDate === tk;
+  const hasF = p.fertDate === tk;
+
+  const wPct = hasW ? 100 : 35;
+  const sPct = hasS ? 100 : 40;
+  const fPct = hasF ? 100 : 30;
+
+  // Exact height in cm so she sees micro-growth on every single action
+  const heightCm = (1.5 + (day - 1) * 0.32 + (p.microGrowth || 0) * 0.15).toFixed(2);
+  const yearPct = Math.min(100, ((day / 365) * 100)).toFixed(1);
+
+  return card(
+    `<span>🌱 Our 365-Day Love Plant</span><span class="badge">⭐ ${p.xp || 0} XP</span>`,
+    `<div class="plant-box">
+      <div class="plant-header">
+        <div>
+          <div class="plant-stage-title">${esc(stage.name)}</div>
+          <small style="color:var(--muted);font-size:12px">${esc(stage.sub)}</small>
+        </div>
+        <span class="badge" style="color:#4ade80;border-color:rgba(74,222,128,0.3)">📏 ${heightCm} cm</span>
+      </div>
+
+      ${buildPlantSvg(p)}
+
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px">
+        <span>365-Day Journey: <b style="color:#fff">Day ${day} of 365</b></span>
+        <span>${yearPct}%</span>
+      </div>
+      <div class="meter-bar" style="height:7px;margin-top:4px">
+        <div class="meter-fill" style="width:${yearPct}%;background:linear-gradient(90deg,var(--p),var(--s))"></div>
+      </div>
+
+      <div class="plant-stats-row">
+        <div class="plant-stat">
+          <small>💧 Water</small>
+          <b>${wPct}%</b>
+          <div class="meter-bar"><div class="meter-fill" style="width:${wPct}%;background:#38bdf8"></div></div>
+        </div>
+        <div class="plant-stat">
+          <small>☀️ Sunlight</small>
+          <b>${sPct}%</b>
+          <div class="meter-bar"><div class="meter-fill" style="width:${sPct}%;background:#facc15"></div></div>
+        </div>
+        <div class="plant-stat">
+          <small>🌱 Nutrients</small>
+          <b>${fPct}%</b>
+          <div class="meter-bar"><div class="meter-fill" style="width:${fPct}%;background:#4ade80"></div></div>
+        </div>
+      </div>
+
+      <div class="plant-actions">
+        <button class="btn ${hasW ? 'done' : 'p'}" data-a="pcare" data-i="water">
+          <span style="font-size:18px">💧</span>
+          <span>${hasW ? 'Watered ✓' : 'Water (+15)'}</span>
+        </button>
+        <button class="btn ${hasS ? 'done' : 'p'}" data-a="pcare" data-i="sun">
+          <span style="font-size:18px">☀️</span>
+          <span>${hasS ? 'Sunlit ✓' : 'Sunlight (+15)'}</span>
+        </button>
+        <button class="btn ${hasF ? 'done' : 'p'}" data-a="pcare" data-i="fert">
+          <span style="font-size:18px">🌱</span>
+          <span>${hasF ? 'Fertilized ✓' : 'Fertilize (+20)'}</span>
+        </button>
+      </div>
+
+      <p class="plant-log" id="plog">${esc(p.lastLog || 'Give Water, Sunlight & Fertilizer daily to grow our tree!')}</p>
+    </div>`,
+    'c2'
+  );
+}
+
+/* ---------- 3. Weekly Love Coupons Logic ---------- */
+function getCouponState() {
+  let st = ls.g('cp_v2', { lastRedeemAt: 0, redeemedId: '', redeemedTitle: '' });
+  if (st.lastRedeemAt && Date.now() - st.lastRedeemAt >= WEEK_MS) {
+    st = { lastRedeemAt: 0, redeemedId: '', redeemedTitle: '' };
+    ls.s('cp_v2', st);
+  }
+  return st;
+}
+
+function renderWeeklyCoupons() {
+  if (!C.feature_toggles.show_coupons || !C.coupons?.length) return '';
+  const st = getCouponState();
+  const isLocked = st.lastRedeemAt && (Date.now() - st.lastRedeemAt < WEEK_MS);
+  const remMs = isLocked ? (WEEK_MS - (Date.now() - st.lastRedeemAt)) : 0;
+
+  let banner = `<div class="status-banner">
+    <span>🎟️ <b>Weekly Pass:</b> ${isLocked ? `Claimed (${esc(st.redeemedTitle)})` : '1 Coupon Available!'}</span>
+    <span style="color:var(--s);font-weight:600">${isLocked ? `⏳ Next in ${fmtRemaining(remMs)}` : '✨ Ready to Redeem'}</span>
+  </div>`;
+
+  const listHtml = C.coupons.map(c => {
+    const isThisPicked = isLocked && st.redeemedId === c.id;
+    const btnText = isThisPicked ? 'Claimed ✓' : isLocked ? `🔒 ${fmtRemaining(remMs)}` : 'Redeem';
+    return `<div class="it">
+      <div><b>${esc(c.title)}</b><br><small>${esc(c.desc)}</small></div>
+      <button class="btn p" data-a="cp" data-i="${esc(c.id)}" ${isLocked ? 'disabled' : ''}>${btnText}</button>
+    </div>`;
+  }).join('');
+
+  return card(`<span>🎟️ Love Coupons</span><span class="badge">1 / Week</span>`, banner + listHtml);
 }
 
 /* ---------- Balanced Theme & Soft Ambient Particles ---------- */
@@ -964,6 +1515,10 @@ const V = {
   play() {
     const T = C.feature_toggles, I = C.interactive;
     let h = '';
+    if (T.show_love_plant) {
+      h += renderLovePlant();
+    }
+    h += renderWeeklyPoll();
     if (T.show_birthday_cake) {
       h += card('🎂 Birthday Cake', `<svg id="cake" viewBox="0 0 220 170" width="240" style="display:block;margin:auto"><g stroke-width="2" stroke-linecap="round"><ellipse cx="110" cy="158" rx="92" ry="8" fill="none" stroke="var(--s)"/><rect x="30" y="112" width="160" height="42" rx="8" fill="rgba(225,29,72,0.18)" stroke="var(--p)"/><rect x="52" y="80" width="116" height="32" rx="8" fill="rgba(56,189,248,0.15)" stroke="var(--s)"/><rect x="74" y="54" width="72" height="26" rx="7" fill="rgba(225,29,72,0.18)" stroke="var(--p)"/><path d="M52 88q7 9 14 0t14 0t14 0t14 0t14 0t14 0t14 0t14 0" fill="none" stroke="#facc15"/></g>${[88, 99, 110, 121, 132].map(x => `<rect x="${x - 2}" y="38" width="4" height="16" rx="1" fill="#facc15"/><ellipse class="fl" cx="${x}" cy="31" rx="4" ry="7" fill="#fb923c"/><path class="sm" d="M${x} 34q-4-6 0-11t0-9"/>`).join('')}</svg><p class="ct" style="margin-bottom:8px"><small>Blow into your microphone or tap the button below</small></p><div class="ct"><button class="btn p" data-a="mic">🎤 Blow with Mic</button><button class="btn" data-a="blow">💨 Tap to Blow</button></div>`);
     }
@@ -973,17 +1528,8 @@ const V = {
     if (I.fortune_cookies?.length) {
       h += card('🥠 Fortune Cookie', `<p id="fc" style="margin-bottom:10px">Tap below to crack open a fortune cookie!</p><button class="btn" data-a="fc">Crack a Cookie 🥠</button>`);
     }
-    const P = I.live_poll;
-    if (P && P.question && P.options?.length) {
-      const ans = ls.g('poll' + P.question_id, '');
-      h += card('📊 ' + esc(P.question), ans ? `<p>Your selected answer: <b style="color:var(--s)">${esc(ans)}</b> 💖</p>` : P.options.map((o, i) => `<button class="btn" data-a="poll" data-i="${i}">${esc(o)}</button>`).join(''), 'c2');
-    }
     if (T.show_quiz && C.quiz?.length) {
       h += card('🧠 Couple Quiz', `<div id="qz">${qz()}</div>`);
-    }
-    if (T.show_love_plant) {
-      const l = ls.g('pl', 0);
-      h += card('🌱 Our Love Plant', `<div class="ct" id="pt" style="font-size:52px;margin:8px 0">${['🌱', '🌿', '🪴', '🌷', '🌹', '🌸'][Math.min(5, Math.floor(l / 2))]}</div><p class="ct"><small>Water our plant every day to help it bloom</small></p><div class="ct"><button class="btn p" data-a="water">💧 Water Plant</button></div>`, 'c2');
     }
     if (T.show_bucket_list && C.bucket_list?.length) {
       h += card('✅ Our Bucket List', C.bucket_list.map(b => `<div class="it"><span>${b.done ? '✅' : '⬜'} ${esc(b.task)}</span><small>${b.done ? 'Done' : 'Goal'}</small></div>`).join(''));
@@ -992,7 +1538,7 @@ const V = {
   },
 
   inbox() {
-    const T = C.feature_toggles, M = C.media, used = ls.g('cp', []);
+    const T = C.feature_toggles, M = C.media;
     let h = '';
     h += card('💓 Heartbeat Touch Link', `<div class="th" id="th">💗</div><p class="ct"><small>Press and hold the heart — Rivishan will get a live alert!</small></p>`);
     h += card('⚡ Quick Love Alert', [
@@ -1013,9 +1559,7 @@ const V = {
     if (T.show_envelopes && C.envelopes?.length) {
       h += card('✉️ Open When Letters', C.envelopes.map((e, i) => `<button class="btn" data-a="env" data-i="${i}">${esc(e.title)}</button>`).join('') + `<div id="ev" style="margin-top:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid var(--border)" hidden></div>`, 'c2');
     }
-    if (T.show_coupons && C.coupons?.length) {
-      h += card('🎟️ Love Coupons', C.coupons.map(c => `<div class="it"><div><b>${esc(c.title)}</b><br><small>${esc(c.desc)}</small></div><button class="btn p" data-a="cp" data-i="${esc(c.id)}" ${used.includes(c.id) ? 'disabled' : ''}>${used.includes(c.id) ? 'Used' : 'Redeem'}</button></div>`).join(''));
-    }
+    h += renderWeeklyCoupons();
     if (T.show_time_vaults && C.time_vaults?.length) {
       h += card('🔐 Time-Locked Vaults', C.time_vaults.map(v => {
         const k = cd(v);
@@ -1174,12 +1718,100 @@ const A = {
     render();
   },
   fc() { $('#fc').textContent = rnd(C.interactive.fortune_cookies); },
+
+  // 1. Weekly 2-Pick Poll Action
   poll(i) {
-    const P = C.interactive.live_poll, o = P.options[i];
-    ls.s('poll' + P.question_id, o);
-    post('poll_answer', o);
+    const P = C.interactive.live_poll;
+    const chosen = P.options[i];
+    if (!chosen) return;
+    const st = getPollState();
+    if (st.currentPicks.length >= 2 || st.currentPicks.includes(chosen)) return;
+
+    st.currentPicks.push(chosen);
+    if (st.currentPicks.length === 1 && !st.weekStart) {
+      st.weekStart = Date.now();
+    } else if (st.currentPicks.length === 2) {
+      st.weekStart = Date.now();
+    }
+    ls.s('poll_v2', st);
+    navigator.vibrate?.(60);
+
+    const pickLabel = `Pick ${st.currentPicks.length}/2: ${chosen}` +
+      (st.currentPicks.length === 2 ? ` (Weekly Pair: ${st.currentPicks.join(' + ')})` : '');
+    post('poll_answer', pickLabel);
+    toast(st.currentPicks.length < 2 ? `✅ Pick #1 saved! Choose 1 more activity` : `💖 Both weekly activities selected!`);
     render();
   },
+
+  // 2. 365-Day Love Plant Care Action (Water, Sunlight, Fertilizer)
+  pcare(type) {
+    const p = getPlantState();
+    const tk = todayKey();
+    const prevStage = getPlantStage(p.daysCared || 1).name;
+
+    // Advance day counter (up to 365) once per calendar day when first cared for
+    if (p.lastCareDate !== tk) {
+      p.daysCared = p.lastCareDate ? Math.min(365, (p.daysCared || 1) + 1) : Math.max(1, p.daysCared || 1);
+      p.lastCareDate = tk;
+    }
+
+    let gainedXp = 0;
+    let actionLabel = '';
+
+    if (type === 'water') {
+      if (p.waterDate === tk) {
+        toast('💧 Already watered today! Come back tomorrow for +15 XP.');
+        return;
+      }
+      p.waterDate = tk;
+      gainedXp = 15;
+      actionLabel = '💧 Watered plant (+15 XP) — Stem grew +0.15 cm & leaves refreshed!';
+    } else if (type === 'sun') {
+      if (p.sunDate === tk) {
+        toast('☀️ Already gave sunlight today! Come back tomorrow for +15 XP.');
+        return;
+      }
+      p.sunDate = tk;
+      gainedXp = 15;
+      actionLabel = '☀️ Gave warm sunlight (+15 XP) — New leaf sprouted & +0.15 cm growth!';
+    } else if (type === 'fert') {
+      if (p.fertDate === tk) {
+        toast('🌱 Already fertilized today! Come back tomorrow for +20 XP.');
+        return;
+      }
+      p.fertDate = tk;
+      gainedXp = 20;
+      actionLabel = '🌱 Added rich fertilizer (+20 XP) — Roots strengthened & +0.15 cm growth!';
+    }
+
+    p.xp = (p.xp || 0) + gainedXp;
+    p.microGrowth = (p.microGrowth || 0) + 1;
+
+    // Check if all 3 daily care actions are completed today for a Combo Bonus
+    if (p.waterDate === tk && p.sunDate === tk && p.fertDate === tk && p.comboDate !== tk) {
+      p.comboDate = tk;
+      p.xp += 25;
+      p.microGrowth += 1;
+      actionLabel = `🌟 All 3 Daily Cares Complete! (+25 Bonus XP) • Day ${p.daysCared}/365!`;
+      burst(45);
+    }
+
+    p.lastLog = actionLabel;
+    ls.s('plant_v2', p);
+    plantFx = type;
+    setTimeout(() => { plantFx = ''; }, 1500);
+
+    navigator.vibrate?.([50, 40, 60]);
+    toast(actionLabel);
+
+    const newStage = getPlantStage(p.daysCared).name;
+    post('plant_care', `${actionLabel} | Day ${p.daysCared}/365 | Total XP: ${p.xp}`);
+    if (newStage !== prevStage || p.daysCared === 365) {
+      post('plant_milestone', `Reached ${newStage} on Day ${p.daysCared}/365 (${p.xp} XP)!`);
+    }
+    render();
+  },
+
   qa(i) {
     const c = C.quiz[q.i];
     if (i == c.answer_index) {
@@ -1194,12 +1826,6 @@ const A = {
   qr() {
     q = { i: 0, s: 0 };
     $('#qz').innerHTML = qz();
-  },
-  water() {
-    const l = Math.min(10, ls.g('pl', 0) + 1);
-    ls.s('pl', l);
-    $('#pt').textContent = ['🌱', '🌿', '🪴', '🌷', '🌹', '🌸'][Math.min(5, Math.floor(l / 2))];
-    toast('💧 Plant watered!');
   },
   ql(i, b) {
     post('quick_love', b.dataset.v);
@@ -1216,15 +1842,27 @@ const A = {
     box.hidden = false;
     post('envelope_opened', e.title);
   },
-  cp(id, b) {
-    const u = ls.g('cp', []);
-    u.push(id);
-    ls.s('cp', u);
-    post('coupon_redeemed', (C.coupons.find(c => c.id == id) || {}).title || id);
-    b.disabled = true;
-    b.textContent = 'Used';
-    toast('🎟️ Coupon Redeemed!');
+
+  // 3. Weekly Love Coupon Redeem Action
+  cp(id) {
+    const st = getCouponState();
+    if (st.lastRedeemAt && Date.now() - st.lastRedeemAt < WEEK_MS) {
+      toast(`⏳ You can redeem your next coupon in ${fmtRemaining(WEEK_MS - (Date.now() - st.lastRedeemAt))}`);
+      return;
+    }
+    const found = C.coupons.find(c => c.id == id) || { title: id };
+    const nextSt = {
+      lastRedeemAt: Date.now(),
+      redeemedId: id,
+      redeemedTitle: found.title
+    };
+    ls.s('cp_v2', nextSt);
+    navigator.vibrate?.([70, 50, 70]);
+    post('coupon_redeemed', found.title);
+    toast(`🎟️ Redeemed: ${found.title}! (Resets in 7 days)`);
+    render();
   },
+
   rp() {
     const v = $('#rp').value.trim();
     if (!v) return;
