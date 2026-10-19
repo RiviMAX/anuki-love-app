@@ -1,6 +1,7 @@
 // ============================================================================
 // RIVISHAN & ANUKI LOVE APP - MASTER TELEGRAM BOT & APP WEBHOOK (api/webhook.js)
-// Complete 300-Feature Edition (Add, Edit & Remove + GitHub Storage Auto-Clean)
+// Complete 300+ Feature Edition (Add, Edit & Remove + GitHub Storage Auto-Clean
+// + 365-Day Love Plant Game + Weekly 2-Pick Poll + Weekly Coupons + /resetapp)
 // ============================================================================
 
 const https = require('https');
@@ -164,7 +165,6 @@ async function deleteMediaFromGitHub(fileUrlOrPath, commitMsg = 'Delete unused m
     if (gitPath.startsWith(rawPrefix)) {
         gitPath = decodeURIComponent(gitPath.substring(rawPrefix.length).split('?')[0]);
     } else if (gitPath.startsWith('http://') || gitPath.startsWith('https://')) {
-        // External URL not hosted in this GitHub repository
         return false;
     }
 
@@ -476,9 +476,9 @@ const COMMAND_GUIDE = {
         preview: (c) => formatArrayPreview(c.envelopes, e => `<b>${escapeHtml(e.title)}</b>`)
     },
 
-    // 7. LOVE COUPONS
+    // 7. LOVE COUPONS (WEEKLY REDEEM SYSTEM)
     '/addcoupon': {
-        desc: 'Adds a new redeemable Love Coupon to the Inbox tab.',
+        desc: 'Adds a new redeemable Love Coupon to the Inbox tab (Anuki can redeem 1 coupon per week / 7 days).',
         format: '/addcoupon Free Movie Night | Redeem anytime for a cozy movie date with snacks!',
         preview: (c) => formatArrayPreview(c.coupons, cp => `<b>${escapeHtml(cp.title)}</b> - ${escapeHtml(cp.desc)}`)
     },
@@ -687,26 +687,41 @@ const COMMAND_GUIDE = {
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
     },
 
-    // 19. LIVE POLL
+    // 19. LIVE POLL & WEEKLY DATE ACTIVITIES (PICK 2 PER WEEK)
     '/poll': {
-        desc: 'Creates and publishes a new interactive Live Poll for Anuki to answer in the Play tab.',
-        format: '/poll What should we do on our next date? | Get Ice Cream, Cozy Walk, Take Cute Photos',
-        preview: (c) => `Current Poll (#${c.interactive.live_poll.question_id}): <b>${escapeHtml(c.interactive.live_poll.question)}</b>\nOptions: ${escapeHtml(c.interactive.live_poll.options.join(', '))}`
+        desc: 'Creates a new Weekly Date Activity Poll (Anuki can pick 2 options every 7 days; previously picked options are hidden in future weeks until she tries them all!).',
+        format: '/poll What should we do on our next date? | Coffee & Ice Cream ☕🍦, Peaceful Walk 🌿, Cute Photo Session 📸, Movie Date 🍿, Beach Sunset 🌅, Street Food Night 🍔',
+        preview: (c) => `Current Poll (#${c.interactive.live_poll.question_id}): <b>${escapeHtml(c.interactive.live_poll.question)}</b>\nOptions (${c.interactive.live_poll.options.length}):\n` + formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
     },
     '/addpoll': {
-        desc: 'Creates a new Live Poll question and options.',
-        format: '/addpoll What should we do on our next date? | Get Ice Cream, Cozy Walk, Take Cute Photos',
+        desc: 'Creates a new Weekly Date Activity Poll question and options.',
+        format: '/addpoll What should we do on our next date? | Coffee & Ice Cream ☕🍦, Peaceful Walk 🌿, Cute Photo Session 📸, Movie Date 🍿',
         preview: (c) => `Current Poll: <b>${escapeHtml(c.interactive.live_poll.question)}</b>`
     },
     '/editpoll': {
-        desc: 'Edits the current Live Poll question and options without resetting Anuki\'s answer state unless desired.',
-        format: '/editpoll Updated Poll Question? | Option 1, Option 2, Option 3',
-        preview: (c) => `Current Poll: <b>${escapeHtml(c.interactive.live_poll.question)}</b>`
+        desc: 'Edits the current Poll question and options without resetting Anuki\'s weekly progress.',
+        format: '/editpoll Updated Poll Question? | Option 1, Option 2, Option 3, Option 4',
+        preview: (c) => `Current Poll: <b>${escapeHtml(c.interactive.live_poll.question)}</b>\n` + formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
     },
     '/delpoll': {
         desc: 'Clears the active Live Poll question and options.',
         format: '/delpoll confirm',
         preview: (c) => `Current Poll: <b>${escapeHtml(c.interactive.live_poll.question)}</b>`
+    },
+    '/addpollopt': {
+        desc: 'Adds a single new activity option to the existing Weekly Poll list (so Anuki has new choices to pick from!).',
+        format: '/addpollopt Watch the sunset at the beach 🌅',
+        preview: (c) => formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
+    },
+    '/editpollopt': {
+        desc: 'Edits a specific option in the Weekly Poll by its number (1, 2, 3...).',
+        format: '/editpollopt 1 | Updated Activity Option Text ☕',
+        preview: (c) => formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
+    },
+    '/delpollopt': {
+        desc: 'Removes a specific activity option from the Weekly Poll by its number.',
+        format: '/delpollopt 1',
+        preview: (c) => formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
     },
 
     // 20. DAILY SECRET NOTE
@@ -993,7 +1008,37 @@ const COMMAND_GUIDE = {
         preview: (c) => Object.entries(c.feature_toggles).map(([k, v]) => `• <code>${k.replace(/^show_/, '')}</code>: ${v ? '✅ ON' : '❌ OFF'}`).join('\n')
     },
 
-    // 31. MANUAL GITHUB FILE CLEANUP
+    // 31. 365-DAY LOVE PLANT GAME MANAGEMENT
+    '/plant': {
+        desc: 'Sends a Special Love Boost from Rivishan to the 365-Day Love Plant OR sets custom Day (1-365) & XP points.',
+        format: '/plant boost | Sending extra love & sunshine to our plant!',
+        preview: (c) => {
+            const ps = c.plant_state || {};
+            return `Override Day: ${ps.override_day || 'Auto (Device)'} | Boost ID: #${ps.boost_id || 0}`;
+        }
+    },
+    '/editplant': {
+        desc: 'Sets a specific Day (1 to 365) and XP points for the 365-Day Love Plant on the app.',
+        format: '/editplant 45 | 1350',
+        preview: (c) => {
+            const ps = c.plant_state || {};
+            return `Current Override Day: ${ps.override_day || 'None'} | XP: ${ps.override_xp || 'Auto'}`;
+        }
+    },
+    '/delplant': {
+        desc: 'Resets the 365-Day Love Plant back to Day 1 (Seed stage) on the app.',
+        format: '/delplant confirm',
+        preview: () => 'Resets plant progress back to Day 1.'
+    },
+
+    // 32. RESET APP STATES (/resetapp)
+    '/resetapp': {
+        desc: 'Remotely resets saved selections/cooldowns on phones (Use "all" to reset everything, or "poll", "coupons", "plant" to reset a specific feature).',
+        format: '/resetapp all',
+        preview: (c) => `Last Reset ID: #${c.system_reset?.reset_id || 0} (Target: ${c.system_reset?.target || 'none'})`
+    },
+
+    // 33. MANUAL GITHUB FILE CLEANUP
     '/delmedia': {
         desc: 'Directly deletes any specific media file from your GitHub repository storage by its URL or path (e.g. images/img_123.jpg).',
         format: '/delmedia images/img_1792304624548.jpg',
@@ -1027,7 +1072,10 @@ const MAIN_MENU_KEYBOARD = {
             { text: "📊 App Status", callback_data: "app_status" }
         ],
         [
-            { text: "📖 All 300 Features (Add / Edit / Remove)", callback_data: "show_help" }
+            { text: "🔄 Reset App States (Poll/Coupons)", callback_data: "reset_app_all" }
+        ],
+        [
+            { text: "📖 All 300+ Features (Add / Edit / Remove)", callback_data: "show_help" }
         ]
     ]
 };
@@ -1039,7 +1087,7 @@ module.exports = async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(200).json({
             status: "Active",
-            message: "Rivishan & Anuki Master Bot Webhook (300 Features Edition) is Running Properly!",
+            message: "Rivishan & Anuki Master Bot Webhook (300+ Features Edition) is Running Properly!",
             repo: GITHUB_REPO
         });
     }
@@ -1062,10 +1110,12 @@ module.exports = async (req, res) => {
             else if (event === 'mood_selected') alertMsg += `💭 <b>Anuki selected her mood:</b> ${escapeHtml(data)}`;
             else if (event === 'quick_love') alertMsg += `💝 <b>Anuki sent you a Quick Love Alert:</b>\n👉 <b>${escapeHtml(data)}</b>`;
             else if (event === 'direct_reply') alertMsg += `💌 <b>Anuki sent you a message from the App:</b>\n\n"${escapeHtml(data)}"`;
-            else if (event === 'coupon_redeemed') alertMsg += `🎟️ <b>Anuki redeemed a Love Coupon!</b>\nCoupon: <b>${escapeHtml(data)}</b>`;
+            else if (event === 'coupon_redeemed') alertMsg += `🎟️ <b>Anuki redeemed her Weekly Love Coupon!</b>\nCoupon: <b>${escapeHtml(data)}</b>\n<i>(Next coupon redeem unlocks in 7 days)</i>`;
             else if (event === 'cake_blown') alertMsg += `🎂 <b>Anuki blew out the candles on the Birthday Cake!</b>`;
             else if (event === 'envelope_opened') alertMsg += `✉️ <b>Anuki opened a secret letter:</b>\n"${escapeHtml(data)}"`;
-            else if (event === 'poll_answer') alertMsg += `📊 <b>Anuki answered your Live Poll:</b>\n👉 ${escapeHtml(data)}`;
+            else if (event === 'poll_answer') alertMsg += `📊 <b>Anuki selected a Weekly Date Activity (Pick 2 per 7 Days):</b>\n👉 <b>${escapeHtml(data)}</b>`;
+            else if (event === 'plant_care') alertMsg += `🌱 <b>Anuki cared for your 365-Day Love Plant!</b>\n${escapeHtml(data)}`;
+            else if (event === 'plant_milestone') alertMsg += `🌳 <b>365-Day Love Plant Milestone Reached!</b>\n🎉 ${escapeHtml(data)}`;
             else if (event === 'touch_link') alertMsg += `💓 <b>Anuki is holding the Heartbeat Touch Link right now!</b>`;
             else if (event === 'battery_low') alertMsg += `🪫 <b>Anuki's phone battery is low:</b> ${escapeHtml(data)}%`;
             else if (event === 'time_capsule') alertMsg += `⏳ <b>Anuki sealed a message in the Time Capsule:</b>\n"${escapeHtml(data)}"`;
@@ -1132,6 +1182,18 @@ module.exports = async (req, res) => {
                 config.live_popup.trigger_heartbeat_vibration = true;
                 await updateGitHubConfig(config, sha, 'Send Remote Heartbeat Pulse');
                 await sendTelegram(chatId, `💓 <b>Heartbeat Vibration & Live Popup sent to Anuki's App!</b>`);
+            } else if (action === 'reset_app_all') {
+                config.system_reset = {
+                    reset_id: ((config.system_reset && config.system_reset.reset_id) || 0) + 1,
+                    target: 'all',
+                    timestamp: Date.now()
+                };
+                await updateGitHubConfig(config, sha, 'Trigger remote app state reset (all)');
+                await sendTelegram(
+                    chatId,
+                    `🔄 <b>Remote App Reset Triggered (ID: #${config.system_reset.reset_id})!</b>\n` +
+                    `All saved Poll selections, Coupon cooldowns, and Quiz states will automatically reset on the phone.`
+                );
             } else if (action === 'app_status') {
                 const statusText = `📊 <b>Rivishan & Anuki App Status</b>\n\n` +
                     `• <b>Version:</b> v${config.app_version}\n` +
@@ -1140,7 +1202,7 @@ module.exports = async (req, res) => {
                     `• <b>Main PIN:</b> <code>${escapeHtml(config.security.main_pin)}</code>\n` +
                     `• <b>Memories:</b> ${config.memories.length} | <b>Envelopes:</b> ${config.envelopes.length}\n` +
                     `• <b>Coupons:</b> ${config.coupons.length} | <b>Quiz:</b> ${config.quiz.length}\n` +
-                    `• <b>Vaults:</b> ${config.time_vaults.length} | <b>Bucket List:</b> ${config.bucket_list.length}\n` +
+                    `• <b>Poll Options:</b> ${config.interactive.live_poll.options.length} | <b>Vaults:</b> ${config.time_vaults.length}\n` +
                     `• <b>Reasons:</b> ${config.interactive.love_reasons.length} | <b>Fortunes:</b> ${config.interactive.fortune_cookies.length}\n` +
                     `• <b>Notif ID:</b> #${config.notification.notif_id} | <b>Popup ID:</b> #${config.live_popup.popup_id}`;
                 await sendTelegram(chatId, statusText);
@@ -1185,9 +1247,9 @@ module.exports = async (req, res) => {
                 `👑 <b>Welcome Rivishan! (Anuki Love App Master Control)</b>\n\n` +
                 `Your bot is 100% connected to GitHub & the App!\n` +
                 `• Tap any button below for quick actions.\n` +
-                `• Tap /help to view all <b>300 Features (Add, Edit & Remove)</b>.\n` +
+                `• Tap /help to view all <b>300+ Features (Add, Edit & Remove)</b>.\n` +
                 `• Tap any command to receive <b>2 messages</b>: (1) What it does, and (2) A one-tap copyable command format using <code>|</code>.\n` +
-                `• When sending a <b>Photo, Voice, or Song</b>, put the command as the <b>Caption</b>!`,
+                `• Use /resetapp to reset saved Poll/Coupon/Plant states anytime!`,
                 MAIN_MENU_KEYBOARD
             );
             return res.status(200).send('OK');
@@ -1228,7 +1290,6 @@ module.exports = async (req, res) => {
                 argStr = rawInput.substring(firstSpace + 1).trim();
             }
         } else if (hasPhoto || hasVoice || hasAudio) {
-            // Support caption shorthand without leading slash if user wrote e.g. "wallpaper" or "Date | Title | Desc"
             const lowerCap = rawInput.toLowerCase();
             if (hasPhoto) {
                 if (lowerCap === 'wallpaper' || lowerCap.startsWith('wallpaper ')) {
@@ -2245,7 +2306,7 @@ module.exports = async (req, res) => {
         }
 
         // --------------------------------------------------------------------
-        // 19. LIVE POLL (/poll, /addpoll, /editpoll, /delpoll)
+        // 19. LIVE POLL & WEEKLY ACTIVITIES (/poll, /addpollopt, /editpollopt, /delpollopt)
         // --------------------------------------------------------------------
         if (cmd === '/poll' || cmd === '/addpoll') {
             if (parts.length < 2) {
@@ -2257,12 +2318,12 @@ module.exports = async (req, res) => {
                 question: parts[0],
                 options: parts[1].split(',').map(o => o.trim()).filter(Boolean)
             };
-            await updateGitHubConfig(config, sha, 'Create new live poll');
+            await updateGitHubConfig(config, sha, 'Create new weekly poll');
             await sendTelegram(
                 chatId,
-                `📊 <b>New Live Poll Published (#${config.interactive.live_poll.question_id})!</b>\n` +
+                `📊 <b>New Weekly Activity Poll Published (#${config.interactive.live_poll.question_id})!</b>\n` +
                 `• <b>Question:</b> ${escapeHtml(parts[0])}\n` +
-                `• <b>Options:</b> ${escapeHtml(config.interactive.live_poll.options.join(', '))}`
+                `• <b>Options (${config.interactive.live_poll.options.length}):</b> ${escapeHtml(config.interactive.live_poll.options.join(', '))}`
             );
             return res.status(200).send('OK');
         }
@@ -2275,7 +2336,7 @@ module.exports = async (req, res) => {
             config.interactive.live_poll.question = parts[0];
             config.interactive.live_poll.options = parts[1].split(',').map(o => o.trim()).filter(Boolean);
             await updateGitHubConfig(config, sha, 'Edit live poll');
-            await sendTelegram(chatId, `✏️ <b>Live Poll Updated!</b>\n• <b>Question:</b> ${escapeHtml(parts[0])}`);
+            await sendTelegram(chatId, `✏️ <b>Weekly Activity Poll Updated!</b>\n• <b>Question:</b> ${escapeHtml(parts[0])}`);
             return res.status(200).send('OK');
         }
 
@@ -2284,6 +2345,43 @@ module.exports = async (req, res) => {
             config.interactive.live_poll.options = [];
             await updateGitHubConfig(config, sha, 'Clear live poll');
             await sendTelegram(chatId, `🗑️ <b>Live Poll Cleared!</b>`);
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/addpollopt') {
+            const newOpts = argStr.includes('|') ? parts.filter(Boolean) : [argStr];
+            config.interactive.live_poll.options.push(...newOpts);
+            await updateGitHubConfig(config, sha, 'Add poll activity option');
+            await sendTelegram(
+                chatId,
+                `➕ <b>New Date Activity Option Added!</b>\n` +
+                `• <b>Added:</b> ${escapeHtml(newOpts.join(', '))}\n` +
+                `• <b>Total Options Now:</b> ${config.interactive.live_poll.options.length}`
+            );
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/editpollopt') {
+            const idx = parseIdx(parts[0], config.interactive.live_poll.options);
+            if (idx === -1 || parts.length < 2) {
+                await sendCommandGuide(chatId, '/editpollopt', config);
+                return res.status(200).send('OK');
+            }
+            config.interactive.live_poll.options[idx] = parts[1];
+            await updateGitHubConfig(config, sha, `Edit poll option #${idx + 1}`);
+            await sendTelegram(chatId, `✏️ <b>Poll Option #${idx + 1} Updated:</b>\n"${escapeHtml(parts[1])}"`);
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/delpollopt') {
+            const idx = parseIdx(parts[0], config.interactive.live_poll.options);
+            if (idx === -1) {
+                await sendCommandGuide(chatId, '/delpollopt', config);
+                return res.status(200).send('OK');
+            }
+            const removed = config.interactive.live_poll.options.splice(idx, 1)[0];
+            await updateGitHubConfig(config, sha, `Delete poll option #${idx + 1}`);
+            await sendTelegram(chatId, `🗑️ <b>Poll Option #${idx + 1} Removed:</b>\n"${escapeHtml(removed)}"`);
             return res.status(200).send('OK');
         }
 
@@ -2614,7 +2712,7 @@ module.exports = async (req, res) => {
         }
 
         if (cmd === '/delcouple') {
-            config.couple_info.boy_nickname = "Mage Pana";
+            config.couple_info.boy_nickname = "Rivishan";
             config.couple_info.girl_nickname = "Mage Manika";
             await updateGitHubConfig(config, sha, 'Reset couple nicknames');
             await sendTelegram(chatId, `🗑️ <b>Couple Nicknames Reset to Defaults!</b>`);
@@ -2662,7 +2760,72 @@ module.exports = async (req, res) => {
         }
 
         // --------------------------------------------------------------------
-        // 31. MANUAL GITHUB STORAGE FILE DELETE (/delmedia)
+        // 31. 365-DAY LOVE PLANT GAME (/plant, /editplant, /delplant)
+        // --------------------------------------------------------------------
+        if (cmd === '/plant') {
+            config.plant_state = config.plant_state || {};
+            config.plant_state.boost_id = (config.plant_state.boost_id || 0) + 1;
+            config.plant_state.boost_msg = parts[1] || parts[0] || "Rivishan sent a special love & sunshine boost to our plant! ✨🌱";
+            await updateGitHubConfig(config, sha, 'Send love plant boost');
+            await sendTelegram(
+                chatId,
+                `🌱 <b>365-Day Love Plant Boost Sent (#${config.plant_state.boost_id})!</b>\n` +
+                `Anuki's plant will receive +50 Bonus XP & full care stats!`
+            );
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/editplant') {
+            const day = Math.min(365, Math.max(1, parseInt(parts[0], 10) || 1));
+            const xp = parseInt(parts[1], 10) || (day * 30);
+            config.plant_state = config.plant_state || {};
+            config.plant_state.sync_id = (config.plant_state.sync_id || 0) + 1;
+            config.plant_state.override_day = day;
+            config.plant_state.override_xp = xp;
+            await updateGitHubConfig(config, sha, `Set love plant to Day ${day}`);
+            await sendTelegram(
+                chatId,
+                `🌳 <b>365-Day Love Plant Updated!</b>\n` +
+                `• <b>Day:</b> Day ${day} / 365\n` +
+                `• <b>XP Points:</b> ${xp} XP`
+            );
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/delplant') {
+            config.system_reset = {
+                reset_id: ((config.system_reset && config.system_reset.reset_id) || 0) + 1,
+                target: 'plant',
+                timestamp: Date.now()
+            };
+            await updateGitHubConfig(config, sha, 'Reset love plant to Day 1');
+            await sendTelegram(chatId, `🌱 <b>365-Day Love Plant Reset to Day 1!</b>`);
+            return res.status(200).send('OK');
+        }
+
+        // --------------------------------------------------------------------
+        // 32. REMOTE APP RESET (/resetapp)
+        // --------------------------------------------------------------------
+        if (cmd === '/resetapp') {
+            const target = (parts[0] || 'all').toLowerCase();
+            config.system_reset = {
+                reset_id: ((config.system_reset && config.system_reset.reset_id) || 0) + 1,
+                target: ['all', 'poll', 'coupons', 'plant'].includes(target) ? target : 'all',
+                timestamp: Date.now()
+            };
+            await updateGitHubConfig(config, sha, `Remote reset app state (${config.system_reset.target})`);
+            await sendTelegram(
+                chatId,
+                `🔄 <b>Remote App Reset Triggered!</b>\n` +
+                `• <b>Reset ID:</b> #${config.system_reset.reset_id}\n` +
+                `• <b>Target Cleared:</b> <code>${config.system_reset.target.toUpperCase()}</code>\n\n` +
+                `<i>Any phone opening or syncing the app will immediately reset its saved ${config.system_reset.target} state!</i>`
+            );
+            return res.status(200).send('OK');
+        }
+
+        // --------------------------------------------------------------------
+        // 33. MANUAL GITHUB STORAGE FILE DELETE (/delmedia)
         // --------------------------------------------------------------------
         if (cmd === '/delmedia') {
             const deleted = await deleteMediaFromGitHub(argStr, `Manual media delete: ${argStr}`);
@@ -2677,7 +2840,7 @@ module.exports = async (req, res) => {
         // Unknown command fallback
         await sendTelegram(
             chatId,
-            `🤖 <b>Unrecognized Command!</b>\nTap /help to view all 300 Add, Edit & Remove commands, or use the control panel below:`,
+            `🤖 <b>Unrecognized Command!</b>\nTap /help to view all 300+ Add, Edit & Remove commands, or use the control panel below:`,
             MAIN_MENU_KEYBOARD
         );
         return res.status(200).json({ status: 'ok' });
@@ -2696,7 +2859,7 @@ module.exports = async (req, res) => {
 // ============================================================================
 function getHelpMessages() {
     const page1 =
-        `📖 <b>RIVISHAN & ANUKI BOT — 300 FEATURES COMMAND DIRECTORY (PART 1/2)</b>\n` +
+        `📖 <b>RIVISHAN & ANUKI BOT — 300+ FEATURES COMMAND DIRECTORY (PART 1/2)</b>\n` +
         `<i>Tap any command below! The bot will send 2 messages: (1) What it does + current items, and (2) A copy-ready format using <code>|</code>.</i>\n\n` +
 
         `📸 <b>1. Photo Memories & Media (Attach file + Caption):</b>\n` +
@@ -2722,22 +2885,25 @@ function getHelpMessages() {
         `• /addautopool | /editautopool | /delautopool — Auto-Rotating Love Quotes`;
 
     const page2 =
-        `📖 <b>RIVISHAN & ANUKI BOT — 300 FEATURES COMMAND DIRECTORY (PART 2/2)</b>\n\n` +
+        `📖 <b>RIVISHAN & ANUKI BOT — 300+ FEATURES COMMAND DIRECTORY (PART 2/2)</b>\n\n` +
 
-        `🎁 <b>3. Envelopes, Coupons, Vaults & Interactive Games:</b>\n` +
+        `🎁 <b>3. Weekly Poll, 365-Day Plant, Weekly Coupons & Games:</b>\n` +
+        `• /poll | /editpoll | /delpoll — Weekly Date Poll (Pick 2 / 7 Days)\n` +
+        `• /addpollopt | /editpollopt | /delpollopt — Add/Edit Single Poll Activity\n` +
+        `• /plant | /editplant | /delplant — 365-Day Love Plant Boost & Level Control\n` +
+        `• /addcoupon | /editcoupon | /delcoupon — Weekly Redeemable Love Coupons\n` +
         `• /addenvelope | /editenvelope | /delenvelope — 'Open When' Letters\n` +
-        `• /addcoupon | /editcoupon | /delcoupon — Redeemable Love Coupons\n` +
         `• /addvault | /editvault | /delvault — Time-Locked Surprise Vaults\n` +
         `• /addreason | /editreason | /delreason — 'Reasons I Love You' List\n` +
         `• /addfortune | /editfortune | /delfortune — Fortune Cookie Predictions\n` +
-        `• /poll | /editpoll | /delpoll — Live Interactive Poll\n` +
         `• /addquiz | /editquiz | /delquiz — Couple Quiz Questions\n` +
         `• /addbucket | /editbucket | /delbucket — Future Bucket List Goals\n` +
         `• /addstory | /editstory | /delstory — Love Story Chapters\n` +
         `• /adddict | /editdict | /deldict — Private Love Dictionary\n` +
         `• /lyrics | /addlyric | /editlyric | /dellyric — Synchronized Song Lyrics\n\n` +
 
-        `🎨 <b>4. Themes, Styling, Security & Profile:</b>\n` +
+        `🎨 <b>4. Themes, Styling, Security, Profile & Reset:</b>\n` +
+        `• /resetapp — Remotely Reset Saved Poll / Coupons / Plant States\n` +
         `• /theme | /edittheme | /deltheme — Switch App Theme Mode\n` +
         `• /customtheme | /editcustomtheme | /delcustomtheme — Custom Hex Colors\n` +
         `• /header | /editheader | /delheader — App Main Title & Subtitle\n` +
