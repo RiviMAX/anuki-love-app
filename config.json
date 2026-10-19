@@ -1,5 +1,5 @@
 {
-  "app_version": 5,
+  "app_version": 6,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -48,10 +48,10 @@
     "love_bomb_mode": false
   },
   "live_popup": {
-    "popup_id": 1,
-    "enabled": false,
-    "title": "A Special Thought For You",
-    "message": "කොච්චර වැඩ තිබුණත් මගේ හිත හැමවෙලේම නතර වෙන්නේ ඔයා ළඟ විතරයි අනුකි...",
+    "popup_id": 2,
+    "enabled": true,
+    "title": "Heartbeat From Rivishan 💓",
+    "message": "Right at this moment, my heart is beating only for you, my love...",
     "trigger_heartbeat_vibration": true
   },
   "notification": {
