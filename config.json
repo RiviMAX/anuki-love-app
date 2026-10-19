@@ -1,5 +1,5 @@
 {
-  "app_version": 4,
+  "app_version": 5,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -303,5 +303,10 @@
       "chapter": "Chapter 03 • Towards Our Forever",
       "text": "අද අපි ඉන්න තැන ඉඳන් ඉස්සරහට එන හැම අවුරුද්දක්ම එකිනෙකාට හයියක් වෙමින්, එකටම ජීවිතේ දිනන්න අපි බලාපොරොත්තු වෙනවා."
     }
-  ]
+  ],
+  "system_reset": {
+    "reset_id": 1,
+    "target": "all",
+    "timestamp": 1792442000036
+  }
 }
