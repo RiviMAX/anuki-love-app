@@ -882,12 +882,11 @@ function checkRemoteReset() {
     if (t === 'all') {
       q = { i: 0, s: 0 };
     }
-    if (!$('#lock').hidden === false) {
+    if ($('#lock').hidden) {
       toast(`🔄 App ${t.toUpperCase()} state has been reset!`);
     }
   }
 
-  // Check remote plant boost or level override from webhook.js
   const ps = C.plant_state;
   if (ps) {
     const p = getPlantState();
@@ -918,7 +917,6 @@ function getPollState() {
   if (!st || st.qid !== P.question_id) {
     st = { qid: P.question_id, weekStart: 0, currentPicks: [], historyPicks: [] };
   }
-  // Check if 7 days have passed since the weekly picks were completed
   if (st.weekStart && Date.now() - st.weekStart >= WEEK_MS) {
     for (const pick of st.currentPicks) {
       if (!st.historyPicks.includes(pick)) st.historyPicks.push(pick);
@@ -935,9 +933,7 @@ function renderWeeklyPoll() {
   if (!P || !P.question || !P.options?.length) return '';
   const st = getPollState();
 
-  // Filter options that haven't been picked in previous weeks
   let unpickedPool = P.options.filter(o => !st.historyPicks.includes(o));
-  // If fewer than 2 unpicked options remain and she hasn't started picking this week, reset history cycle so she always has choices
   if (unpickedPool.length < 2 && st.currentPicks.length === 0) {
     st.historyPicks = [];
     ls.s('poll_v2', st);
@@ -985,7 +981,6 @@ const PLANT_STAGES = [
 ];
 
 function getPlantState() {
-  const tk = todayKey();
   let p = ls.g('plant_v2', null);
   if (!p) {
     const legacy = ls.g('pl', 0);
@@ -1018,14 +1013,12 @@ function buildPlantSvg(p) {
 
   const day = Math.min(365, Math.max(1, p.daysCared || 1));
   const micro = p.microGrowth || 0;
-  // Continuous growth ratio from 0.0 (Day 1) to 1.0 (Day 365) + micro growth per click
   const prog = Math.min(1, (day - 1) / 364 + (micro % 10) * 0.0025);
 
-  const stemH = Math.round(28 + prog * 112); // grows from 28px to 140px
+  const stemH = Math.round(28 + prog * 112);
   const topY = 182 - stemH;
   const trunkW = (2.8 + prog * 9.5).toFixed(1);
 
-  // Leaf count scales with days & micro actions so every care shows a change
   const leafCount = Math.min(26, 2 + Math.floor(day / 12) + Math.floor(micro / 2));
   let leavesSvg = '';
   for (let i = 0; i < leafCount; i++) {
@@ -1041,7 +1034,6 @@ function buildPlantSvg(p) {
     leavesSvg += `<ellipse cx="${lx}" cy="${ly}" rx="${lSize}" ry="${(lSize * 0.58).toFixed(1)}" transform="rotate(${rot} ${lx} ${ly})" fill="${leafCol}"/>`;
   }
 
-  // Canopy / Crown for mid-to-high stages (Day 20+)
   let canopySvg = '';
   if (day >= 15 || micro >= 6) {
     const cR = Math.min(54, 14 + prog * 42 + (micro % 5));
@@ -1052,7 +1044,6 @@ function buildPlantSvg(p) {
     `;
   }
 
-  // Buds, Flowers & Glowing Hearts based on XP and Days
   const flowerCount = Math.min(18, Math.floor(day / 20) + Math.floor((p.xp || 0) / 45));
   let bloomsSvg = '';
   for (let j = 0; j < flowerCount; j++) {
@@ -1064,12 +1055,10 @@ function buildPlantSvg(p) {
     bloomsSvg += `<circle cx="${fx}" cy="${fy}" r="${(3.2 + (j % 2) * 1.3).toFixed(1)}" fill="${col}" stroke="#fff" stroke-width="0.6"/>`;
   }
 
-  // Top tip bud / heart blossom
   const tipBloom = day >= 5 || micro >= 2
     ? `<text x="130" y="${topY - 6}" text-anchor="middle" font-size="${Math.round(13 + prog * 10)}">${day >= 180 ? '🌸' : day >= 60 ? '🌹' : '🌱'}</text>`
     : '';
 
-  // Active Sun, Water & Fertilizer Visual Effects
   const sunSvg = (hasS || plantFx === 'sun') ? `
     <g class="fx-sun">
       <circle cx="220" cy="34" r="16" fill="#facc15" opacity="0.9"/>
@@ -1101,13 +1090,11 @@ function buildPlantSvg(p) {
     ${waterSvg}
     <g class="svg-tree-group">
       ${canopySvg}
-      <!-- Main Stem / Trunk -->
       <path d="M130 184 Q${130 - Math.round(prog * 8)} ${184 - Math.round(stemH * 0.5)} 130 ${topY}" stroke="url(#trunkGrad)" stroke-width="${trunkW}" fill="none" stroke-linecap="round"/>
       ${leavesSvg}
       ${bloomsSvg}
       ${tipBloom}
     </g>
-    <!-- Soil & Planter Pot -->
     <ellipse cx="130" cy="184" rx="44" ry="7" fill="#3f271d" stroke="#5c3a21" stroke-width="1.5"/>
     ${fertSvg}
     <path d="M90 184 L170 184 L158 210 L102 210 Z" fill="url(#potGrad)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
@@ -1129,7 +1116,6 @@ function renderLovePlant() {
   const sPct = hasS ? 100 : 40;
   const fPct = hasF ? 100 : 30;
 
-  // Exact height in cm so she sees micro-growth on every single action
   const heightCm = (1.5 + (day - 1) * 0.32 + (p.microGrowth || 0) * 0.15).toFixed(2);
   const yearPct = Math.min(100, ((day / 365) * 100)).toFixed(1);
 
@@ -1325,22 +1311,118 @@ function theme() {
   document.title = t.header_title || 'Anuki ♥ Rivishan';
 }
 
-/* ---------- Music Player ---------- */
+/* ---------- Smart Audio & Music Player System ---------- */
 const au = new Audio();
 au.loop = true;
-let mOn = true;
+const bdayAu = new Audio();
+const hintAu = new Audio();
+let mOn = true, bdayTimer = null, synthTimer = null;
+
 const bgUrl = () => mode === 'avurudu' ? C.media.avurudu_music_url : C.media.bg_music_url;
 
-function play(u, force) {
+function playBg(force) {
+  const u = bgUrl();
   if (!u || (!mOn && !force)) return;
   if (au.src !== u) au.src = u;
+  au.loop = true;
   au.play().catch(() => {});
+}
+
+// Temporarily pauses background music when Voice Note, Hint, or Birthday clip plays
+function pauseBgForOtherAudio() {
+  if (!au.paused) au.pause();
+}
+
+// Automatically resumes background music when Voice Note, Hint, or Birthday clip finishes
+function resumeBgIfEnabled() {
+  if (!mOn) return;
+  const vEl = $('#vn_au');
+  if (vEl && !vEl.paused) return;
+  if (!bdayAu.paused) return;
+  if (!hintAu.paused) return;
+  playBg();
+}
+
+function stopBdayMusicAndResume() {
+  clearTimeout(bdayTimer);
+  clearTimeout(synthTimer);
+  if (!bdayAu.paused) {
+    bdayAu.pause();
+    bdayAu.currentTime = 0;
+  }
+  resumeBgIfEnabled();
+}
+
+// Built-in Web Audio Music Box "Happy Birthday" melody fallback (plays if MP3 is missing or blocked)
+function playHappyBirthdaySynth(durationMs = 16000) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return resumeBgIfEnabled();
+    const ctx = new AC();
+    // Notes for "Happy Birthday to You" (Frequency in Hz, duration in beats)
+    const notes = [
+      [261.6, 0.75], [261.6, 0.25], [293.7, 1], [261.6, 1], [349.2, 1], [329.6, 2],
+      [261.6, 0.75], [261.6, 0.25], [293.7, 1], [261.6, 1], [392.0, 1], [349.2, 2],
+      [261.6, 0.75], [261.6, 0.25], [523.3, 1], [440.0, 1], [349.2, 1], [329.6, 1], [293.7, 2],
+      [466.2, 0.75], [466.2, 0.25], [440.0, 1], [349.2, 1], [392.0, 1], [349.2, 2.2]
+    ];
+    let t = ctx.currentTime + 0.1;
+    const beat = 0.42;
+    for (const [freq, d] of notes) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.exponentialRampToValueAtTime(0.22, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + d * beat - 0.03);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + d * beat);
+      t += d * beat;
+    }
+    const totalMs = Math.min(durationMs, (t - ctx.currentTime) * 1000 + 300);
+    clearTimeout(synthTimer);
+    synthTimer = setTimeout(() => {
+      ctx.close().catch(() => {});
+      resumeBgIfEnabled();
+    }, totalMs);
+  } catch {
+    resumeBgIfEnabled();
+  }
+}
+
+// Plays the Birthday Song snippet for 20 seconds when candles are blown out, then resumes background music
+function playBirthdaySnippet() {
+  pauseBgForOtherAudio();
+  clearTimeout(bdayTimer);
+  const bUrl = C.media?.birthday_music_url;
+  if (bUrl) {
+    bdayAu.src = bUrl;
+    bdayAu.loop = false;
+    bdayAu.currentTime = 0;
+    bdayAu.onended = () => stopBdayMusicAndResume();
+    bdayAu.play().then(() => {
+      // Stop after 20 seconds and automatically return to background music
+      bdayTimer = setTimeout(() => stopBdayMusicAndResume(), 20000);
+    }).catch(() => {
+      playHappyBirthdaySynth(16000);
+    });
+  } else {
+    playHappyBirthdaySynth(16000);
+  }
 }
 
 $('#mu').onclick = () => {
   mOn = !mOn;
   $('#mu').style.opacity = mOn ? 1 : 0.45;
-  mOn ? play(bgUrl()) : au.pause();
+  if (mOn) {
+    resumeBgIfEnabled();
+  } else {
+    au.pause();
+    if (!bdayAu.paused) bdayAu.pause();
+  }
 };
 
 /* ---------- Security Lock Screen ---------- */
@@ -1378,13 +1460,14 @@ function enter(g) {
   guest = g;
   prev = ls.g('seen', 0);
   ls.s('seen', Date.now());
+  if (!hintAu.paused) hintAu.pause();
   $('#lock').hidden = true;
   $('#app').hidden = false;
   $('#nav').hidden = g;
   $('#mu').hidden = g || !bgUrl();
   if (!g) {
     post('app_opened');
-    play(bgUrl());
+    playBg();
     popups();
   }
   render();
@@ -1501,7 +1584,8 @@ const V = {
       h += C.story_chapters.map(s => card('📖 ' + esc(s.chapter), `<p>${esc(s.text)}</p>`, 'c2')).join('');
     }
     if (M.song_lyrics?.length || M.bg_music_url) {
-      h += card('🎶 Our Song & Lyrics', (M.song_lyrics || []).map(l => `<p style="margin-bottom:4px">♪ ${esc(l)}</p>`).join('') + (M.bg_music_url ? `<button class="btn p" style="margin-top:10px" data-a="song">▶ Play Our Song</button>` : ''));
+      const isPlaying = !au.paused && mOn;
+      h += card('🎶 Our Song & Lyrics', (M.song_lyrics || []).map(l => `<p style="margin-bottom:4px">♪ ${esc(l)}</p>`).join('') + (M.bg_music_url ? `<button class="btn p" id="song_btn" style="margin-top:10px" data-a="song">${isPlaying ? '⏸ Pause Our Song' : '▶ Play Our Song'}</button>` : ''));
     }
     if (I.love_reasons?.length) {
       h += card('❤️ Reasons Why I Love You', `<p id="rs" style="margin-bottom:10px">${esc(rnd(I.love_reasons))}</p><button class="btn" data-a="rs">Another Reason 💞</button>`, 'c2');
@@ -1569,7 +1653,7 @@ const V = {
       }).join(''), 'c2');
     }
     if (M.voice_note_url) {
-      h += card('🎙️ ' + esc(M.voice_note_title || 'Voice Note'), `<audio controls preload="none" src="${esc(M.voice_note_url)}" style="width:100%;margin-top:4px"></audio>`);
+      h += card('🎙️ ' + esc(M.voice_note_title || 'Voice Note'), `<audio id="vn_au" controls preload="none" src="${esc(M.voice_note_url)}" style="width:100%;margin-top:4px"></audio>`);
     }
     h += card('💌 Send a Message to Rivishan', `<textarea id="rp" placeholder="Write a message to Rivishan..."></textarea><button class="btn p" data-a="rp">Send Message 💌</button>`, 'c2');
     h += card('⏳ Future Time Capsule', `<textarea id="tc" placeholder="Write a special note for our future..."></textarea><button class="btn" data-a="tc">Seal in Capsule 🔒</button>`);
@@ -1599,6 +1683,18 @@ function render() {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   tick();
   if ($('#scv')) scratch();
+
+  // Auto-pause background music when Voice Note plays, and auto-resume when Voice Note finishes or pauses
+  const vn = $('#vn_au');
+  if (vn) {
+    vn.addEventListener('play', () => {
+      stopBdayMusicAndResume();
+      pauseBgForOtherAudio();
+    });
+    vn.addEventListener('pause', () => resumeBgIfEnabled());
+    vn.addEventListener('ended', () => resumeBgIfEnabled());
+  }
+
   const th = $('#th');
   if (th) {
     th.onpointerdown = () => {
@@ -1654,17 +1750,33 @@ function scratch() {
 /* ---------- User Actions ---------- */
 const A = {
   x() { $('#md').hidden = true; },
-  vh() { new Audio(C.security.voice_hint_url).play().catch(() => toast('Voice hint not available right now')); },
+  vh() {
+    if (!C.security.voice_hint_url) return toast('Voice hint not available right now');
+    pauseBgForOtherAudio();
+    hintAu.src = C.security.voice_hint_url;
+    hintAu.onended = () => resumeBgIfEnabled();
+    hintAu.play().catch(() => toast('Voice hint not available right now'));
+  },
   pool() {
     pool = rnd(C.auto_pilot.auto_message_pool);
     $('#pl').textContent = pool;
   },
   rs() { $('#rs').textContent = rnd(C.interactive.love_reasons); },
-  song() {
-    play(C.media.bg_music_url, true);
-    mOn = true;
-    $('#mu').style.opacity = 1;
-    toast('🎶 Playing our song...');
+  song(i, b) {
+    stopBdayMusicAndResume();
+    if (!au.paused && mOn) {
+      mOn = false;
+      au.pause();
+      $('#mu').style.opacity = 0.45;
+      if (b) b.textContent = '▶ Play Our Song';
+      toast('⏸ Song paused');
+    } else {
+      mOn = true;
+      playBg(true);
+      $('#mu').style.opacity = 1;
+      if (b) b.textContent = '⏸ Pause Our Song';
+      toast('🎶 Playing our song...');
+    }
   },
   blow() {
     const c = $('#cake');
@@ -1673,9 +1785,9 @@ const A = {
     c.classList.add('off');
     burst(80);
     navigator.vibrate?.([80, 40, 80]);
-    play(C.media.birthday_music_url, true);
+    playBirthdaySnippet();
     post('cake_blown');
-    toast('🎉 Happy Birthday, My Queen!');
+    toast('🎉 Happy Birthday, My Queen! 🎂🎶');
   },
   async mic(i, b) {
     if (micOn) return;
@@ -1749,7 +1861,6 @@ const A = {
     const tk = todayKey();
     const prevStage = getPlantStage(p.daysCared || 1).name;
 
-    // Advance day counter (up to 365) once per calendar day when first cared for
     if (p.lastCareDate !== tk) {
       p.daysCared = p.lastCareDate ? Math.min(365, (p.daysCared || 1) + 1) : Math.max(1, p.daysCared || 1);
       p.lastCareDate = tk;
@@ -1787,7 +1898,6 @@ const A = {
     p.xp = (p.xp || 0) + gainedXp;
     p.microGrowth = (p.microGrowth || 0) + 1;
 
-    // Check if all 3 daily care actions are completed today for a Combo Bonus
     if (p.waterDate === tk && p.sunDate === tk && p.fertDate === tk && p.comboDate !== tk) {
       p.comboDate = tk;
       p.xp += 25;
