@@ -1,5 +1,5 @@
 {
-  "app_version": 3,
+  "app_version": 4,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -89,7 +89,7 @@
     ]
   },
   "media": {
-    "bg_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/bg_song.mp3",
+    "bg_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/song_1792415214468.mp3",
     "birthday_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/bday_song.mp3",
     "avurudu_music_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/music/avurudu.mp3",
     "voice_note_title": "Voice Note from Rivishan",
