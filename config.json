@@ -1,5 +1,5 @@
 {
-  "app_version": 19,
+  "app_version": 20,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -95,7 +95,6 @@
     "voice_note_title": "Voice Note from Rivishan",
     "voice_note_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/voice/love_voice.mp3",
     "song_lyrics": [
-      "[00:09.74] සංසාරේ පුරාවටම නොවෙනස්ව මගේම වී ඉන්න...",
       "[00:10.28] Rivishan & Anuki — Bound by an endless love..."
     ]
   },
