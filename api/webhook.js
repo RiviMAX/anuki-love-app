@@ -1,7 +1,7 @@
 // ============================================================================
 // RIVISHAN & ANUKI LOVE APP - MASTER TELEGRAM BOT & APP WEBHOOK (api/webhook.js)
 // Complete 300+ Feature Edition (Add, Edit & Remove + GitHub Storage Auto-Clean
-// + 365-Day Love Plant Game + Weekly 2-Pick Poll + Weekly Coupons + /resetapp)
+// + 365-Day Love Plant + Weekly Poll/Coupons + Live Lyrics Timestamp Sync)
 // ============================================================================
 
 const https = require('https');
@@ -670,9 +670,9 @@ const COMMAND_GUIDE = {
         preview: (c) => formatArrayPreview(c.security.wrong_pin_messages, w => escapeHtml(w))
     },
 
-    // 18. SONG LYRICS
+    // 18. SONG LYRICS & TIMESTAMP SYNC
     '/lyrics': {
-        desc: 'Replaces the entire list of song lyric lines separated by "|".',
+        desc: 'Replaces the entire list of song lyric lines (supports pasting full multi-line lyrics OR pipe-separated lines, with or without [mm:ss.xx] timestamps).',
         format: '/lyrics First lyric line here | Second lyric line here | Third lyric line here',
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
     },
@@ -683,13 +683,18 @@ const COMMAND_GUIDE = {
     },
     '/editlyric': {
         desc: 'Edits a specific lyric line by its index number.',
-        format: '/editlyric 1 | Updated lyric line text',
+        format: '/editlyric 1 | [00:12.50] Updated lyric line text',
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
     },
     '/dellyric': {
         desc: 'Removes a lyric line by its index number (or "all").',
         format: '/dellyric 1',
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
+    },
+    '/cleartiming': {
+        desc: 'Removes saved [mm:ss.xx] timestamps from all lyric lines while keeping the lyric text intact.',
+        format: '/cleartiming confirm',
+        preview: (c) => `Total Lines: <b>${(c.media.song_lyrics || []).length}</b>`
     },
 
     // 19. LIVE POLL & WEEKLY DATE ACTIVITIES (PICK 2 PER WEEK)
@@ -1101,12 +1106,30 @@ module.exports = async (req, res) => {
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
         // --------------------------------------------------------------------
-        // PART A: LIVE ALERTS & REPLIES FROM ANUKI'S APP
+        // PART A: LIVE ALERTS, REPLIES & LYRICS SYNC FROM ANUKI'S APP
         // --------------------------------------------------------------------
         if (body.source === 'anuki_app') {
             const event = body.event || 'activity';
             const data = body.data || '';
             const time = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' });
+
+            // Special Handler: Save Live-Synced Lyrics Timestamps directly to GitHub config.json
+            if (event === 'save_lyrics_sync') {
+                const parsedLines = typeof data === 'string' ? JSON.parse(data || '[]') : data;
+                if (Array.isArray(parsedLines) && parsedLines.length > 0) {
+                    const { json: config, sha } = await getGitHubConfig();
+                    config.media.song_lyrics = parsedLines;
+                    await updateGitHubConfig(config, sha, 'Save synchronized song lyrics timestamps from App');
+                    await sendTelegram(
+                        OWNER_CHAT_ID,
+                        `🎶 <b>Lyrics Video Timestamps Saved to GitHub!</b>\n` +
+                        `🕒 <i>${time}</i>\n\n` +
+                        `• <b>Synced Lines:</b> ${parsedLines.length} lines (${Math.ceil(parsedLines.length / 4)} stanzas)\n` +
+                        `• <b>Status:</b> Live on Anuki's phone & all devices!`
+                    );
+                }
+                return res.status(200).json({ ok: true });
+            }
 
             let alertMsg = `🌸 <b>Anuki App Live Alert!</b>\n🕒 <i>${time}</i>\n\n`;
 
@@ -1287,12 +1310,17 @@ module.exports = async (req, res) => {
         let argStr = '';
         if (rawInput.startsWith('/')) {
             const firstSpace = rawInput.indexOf(' ');
-            if (firstSpace === -1) {
+            const firstNewline = rawInput.indexOf('\n');
+            let splitPos = -1;
+            if (firstSpace !== -1 && firstNewline !== -1) splitPos = Math.min(firstSpace, firstNewline);
+            else splitPos = Math.max(firstSpace, firstNewline);
+
+            if (splitPos === -1) {
                 cmd = rawInput.toLowerCase().split('@')[0];
                 argStr = '';
             } else {
-                cmd = rawInput.substring(0, firstSpace).toLowerCase().split('@')[0];
-                argStr = rawInput.substring(firstSpace + 1).trim();
+                cmd = rawInput.substring(0, splitPos).toLowerCase().split('@')[0];
+                argStr = rawInput.substring(splitPos + 1).trim();
             }
         } else if (hasPhoto || hasVoice || hasAudio) {
             const lowerCap = rawInput.toLowerCase();
@@ -1368,7 +1396,6 @@ module.exports = async (req, res) => {
                 description: parts[2] || (parts[0] && parts.length === 1 ? parts[0] : "An unforgettable moment together."),
                 image_url: imageUrl
             };
-            // Appends to the bottom of the memories list
             config.memories.push(newMemory);
             await updateGitHubConfig(config, sha, 'Add new memory');
             await sendTelegram(
@@ -2276,7 +2303,7 @@ module.exports = async (req, res) => {
         }
 
         // --------------------------------------------------------------------
-        // 18. SONG LYRICS (/lyrics, /addlyric, /editlyric, /dellyric)
+        // 18. SONG LYRICS & TIMESTAMPS (/lyrics, /addlyric, /editlyric, /dellyric, /cleartiming)
         // --------------------------------------------------------------------
         if (cmd === '/lyrics') {
             const rawLines = argStr.includes('|') ? parts : argStr.split(/\r?\n/);
@@ -2322,6 +2349,15 @@ module.exports = async (req, res) => {
             const removed = config.media.song_lyrics.splice(idx, 1)[0];
             await updateGitHubConfig(config, sha, `Delete lyric #${idx + 1}`);
             await sendTelegram(chatId, `🗑️ <b>Lyric Line #${idx + 1} Removed:</b>\n"${escapeHtml(removed)}"`);
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/cleartiming') {
+            config.media.song_lyrics = (config.media.song_lyrics || []).map(line =>
+                String(line).replace(/^\[\d{1,2}:\d{2}(?:\.\d{1,2})?\]\s*/, '').trim()
+            );
+            await updateGitHubConfig(config, sha, 'Clear song lyric timestamps');
+            await sendTelegram(chatId, `⏱️ <b>All Lyric Timestamps Cleared!</b> (Lines reverted to automatic timing)`);
             return res.status(200).send('OK');
         }
 
@@ -2921,7 +2957,7 @@ function getHelpMessages() {
         `• /addbucket | /editbucket | /delbucket — Future Bucket List Goals\n` +
         `• /addstory | /editstory | /delstory — Love Story Chapters\n` +
         `• /adddict | /editdict | /deldict — Private Love Dictionary\n` +
-        `• /lyrics | /addlyric | /editlyric | /dellyric — Synchronized Song Lyrics\n\n` +
+        `• /lyrics | /addlyric | /editlyric | /dellyric | /cleartiming — Synchronized Song Lyrics\n\n` +
 
         `🎨 <b>4. Themes, Styling, Security, Profile & Reset:</b>\n` +
         `• /resetapp — Remotely Reset Saved Poll / Coupons / Plant States\n` +
