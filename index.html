@@ -968,7 +968,6 @@ const ls = {
 
 let C, raw = '', tab = 'home', guest = false, mode = 'love', pin = '', wr = 0, prev = 0, q = { i: 0, s: 0 }, pool = '', plantFx = '';
 let lyrOffsetLines = 0, lastStanzaIdx = -1;
-// Secret Lyrics Sync Studio state (unlocked by 5 rapid taps on Verse badge)
 let syncMode = false, syncCursor = 0, syncTimes = [], badgeTapCount = 0, badgeTapTimer = null;
 
 const todayKey = () => {
@@ -1085,8 +1084,86 @@ function checkRemoteReset() {
   }
 }
 
-/* ---------- 4-Line Lyrics Video Player + Exact Timestamp Sync ---------- */
-// Parses each line from config.json (supports "[mm:ss.xx] Lyric text" or plain text)
+/* ---------- 4-Line Lyrics Video Player + Default 19-Verse Fallback ---------- */
+const DEFAULT_FULL_LYRICS = [
+  "මගේ ළඟ නුඹ ඉන්නා මේ හැන්දෑව...",
+  "මතකයි අප ආ දුර මේ ගමන...",
+  "අතීතයම අද සුන්දර සිහිනයක් වෙලා,",
+  "නුඹත් එක්ක ගෙවන මේ ජීවිතය.",
+  "වැටුණු තැන්වල නුඹ මගේ අත අල්ලා,",
+  "හඬපු දවස්වල ළඟින්ම හිඳලා,",
+  "ලෝකයම අපිව වෙන් කරන්න හැදුවත්,",
+  "නුඹේ ආදරේ මාව තවත් බැඳලා.",
+  "කාලය ගෙවුණත් වෙනස් නොවී,",
+  "නුඹේ නමින්ම හුස්මක් වී,",
+  "අපි පැතූ ඒ ලස්සන ලෝකය,",
+  "අද අපි ළඟම හැබෑ වී...",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "නිහඬවම අපි දිනුවා නේද...",
+  "අකමැති වුණු ඒ මුළු ලෝකයම,",
+  "අද බලා ඉන්නවා නිහඬවම.",
+  "කඳුළු පිරුණු ඒ අතීතය,",
+  "අද සිනහවක් වී අප ළඟම,",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "සදා ඉමු අපි මේ ආදරේම.",
+  "හැමදේම දිනපු අපේ අද දවස...",
+  "මේ ලෝකෙට ආවා අපගේ කුමරිය...",
+  "ගෙවෙනා හැම තත්පරේම පිරුණා ආදරය,",
+  "එදා වගේම ඉමු අපි සදා සතුටින්ම.",
+  "පුංචි අතකින් අපේ අත් අල්ලා,",
+  "අලුත් සිහිනයක් අප ළඟට ගෙනැල්ලා,",
+  "අපේ ආදරේ තවත් ලස්සන කරලා,",
+  "පුංචි සුරංගනාවියක් වගේ ආවා...",
+  "ඇගේ සිනහවෙන් නිවසම පිරුණා,",
+  "ඇගේ කතාවෙන් හදවත් හිනැහුණා,",
+  "අපි පැතූ ජීවිතේ සම්පූර්ණ වෙලා,",
+  "අපේ ලෝකයම අද ලස්සන වුණා.",
+  "ඊයේ තිබුණ දුක අමතක කරලා,",
+  "හෙට දවස ගැන සිහින මවලා,",
+  "නුඹයි ඇයයි ළඟින් තියාගෙන,",
+  "මගේ ජීවිතේම සතුට කරලා...",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "නිහඬවම අපි දිනුවා නේද...",
+  "අකමැති වුණු ඒ මුළු ලෝකයම,",
+  "අද බලා ඉන්නවා නිහඬවම.",
+  "කඳුළු පිරුණු ඒ අතීතය,",
+  "අද සිනහවක් වී අප ළඟම,",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "සදා ඉමු අපි මේ ආදරේම.",
+  "හෙට දවස කොහොම වේද දන්නේ නෑ,",
+  "ඒත් නුඹේ අත මම අතහරින්නේ නෑ...",
+  "සුළඟක් වගේ කාලය ගියත්,",
+  "මේ ආදරේ නම් මැකෙන්නේ නෑ.",
+  "අපි දෙන්නා ගිය ඒ පාර දිගේ,",
+  "අද අපේ කුමරියත් ඇවිදිනවා වගේ,",
+  "අපි පැතූ හැම සිහිනයක්ම,",
+  "අද අපේ ඇස් ඉදිරියේම පෙනෙනවා වගේ.",
+  "වයස ගියත් නුඹේ අත අල්ලන්,",
+  "ඉමු අපි දෙන්නා එදා වගේම,",
+  "අපේ දුවත් ලොකු වී දුර ගියත්,",
+  "ඇගේ මතක අපි ළඟ තියේවි සදාම.",
+  "කොච්චර දුර කාලය ගියත්,",
+  "අපේ කතාව අවසන් වෙන්නේ නෑ...",
+  "මේ හදවත නුඹව තෝරාගත් දවසේ,",
+  "ඒ තේරීම කිසිදා වෙනස් වෙන්නේ නෑ.",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "කාලය එක්කම ජයගත්තා නේද...",
+  "අපිව වෙන් කරන්න හැදූ ඒ ලෝකයම,",
+  "අද අපේ සතුට දිහා බලනවා නේද...",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "අපේ කුමරියත් ළඟින් තියාගෙන,",
+  "ජීවිතේ අවසන් හුස්ම තෙක්ම,",
+  "ඉමු අපි තුන්දෙනා ආදරෙන්ම...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "නුඹ ළඟ ඉන්නා හැම මොහොතම...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "අපේ පුංචි ලෝකය තරම්...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "අපි දෙන්නාගේ කතාව තරම්...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "සදාකල්ම නුඹ මගේ නම්..."
+];
+
 function getLyricEntries() {
   const rawArr = C?.media?.song_lyrics || [];
   let entries = [];
@@ -1105,6 +1182,10 @@ function getLyricEntries() {
       }
     }
   }
+  // If config.json still has the 4 placeholder lines, automatically use the full 76-line song lyrics!
+  if (entries.length <= 4 && !entries.some(e => e.time !== null)) {
+    return DEFAULT_FULL_LYRICS.map(text => ({ time: null, text }));
+  }
   return entries;
 }
 
@@ -1115,7 +1196,6 @@ function getActiveLyricPosition() {
   const dur = au.duration && isFinite(au.duration) && au.duration > 10 ? au.duration : 319;
   const cur = au.currentTime || 0;
 
-  // In Sync Studio mode, follow the active sync cursor
   if (syncMode) {
     const activeIdx = Math.max(0, Math.min(totalLines - 1, syncCursor > 0 ? syncCursor - 1 : 0));
     return {
@@ -1130,12 +1210,10 @@ function getActiveLyricPosition() {
     };
   }
 
-  // Check if lines have exact [mm:ss.xx] timestamps saved in config.json
   const hasExactTimestamps = entries.some(e => e.time !== null);
   let baseLineIdx = 0;
 
   if (hasExactTimestamps) {
-    // Find the latest line whose timestamp has been reached by the audio player
     let found = 0;
     for (let i = 0; i < entries.length; i++) {
       const t = syncTimes[i] !== undefined ? syncTimes[i] : entries[i].time;
@@ -1145,7 +1223,6 @@ function getActiveLyricPosition() {
     }
     baseLineIdx = found;
   } else {
-    // Fallback proportional calculation if timestamps haven't been tapped yet
     const intro = Math.min(8, dur * 0.03);
     const singingSpan = Math.max(20, dur - intro - 8);
     const effTime = Math.max(0, cur - intro);
@@ -1168,7 +1245,6 @@ function renderLyricsVideoCard() {
   const pct = Math.min(100, (cur / dur) * 100).toFixed(1);
   lastStanzaIdx = stanzaIdx;
 
-  // Secret Studio Panel (only shown when Rivishan taps Verse badge 5 times)
   let studioHtml = '';
   if (syncMode) {
     const nextEntry = entries[syncCursor];
@@ -1227,7 +1303,6 @@ function renderLyricsVideoCard() {
   );
 }
 
-// Live updates the 4-line Lyrics Video player smoothly as the song plays
 function syncLyricsDisplay() {
   const stage = $('#lyr_stage');
   if (!stage || !C) return;
@@ -1245,7 +1320,6 @@ function syncLyricsDisplay() {
   const st = $('#lyr_status');
   if (st) st.textContent = isPlaying ? 'Now Singing...' : 'Paused';
 
-  // Update live timer on the Tap button if Sync Studio is open
   const tapBtn = document.querySelector('[data-a="sync_tap"]');
   if (tapBtn && syncCursor < entries.length) {
     tapBtn.textContent = `🎯 TAP NOW — Mark Line #${syncCursor + 1} (${fmtTime(cur)})`;
@@ -2041,7 +2115,6 @@ function render() {
   tick();
   if ($('#scv')) scratch();
 
-  // Seek bar click handler on Lyrics Video Card
   const pbar = $('#lyr_pbar');
   if (pbar) {
     pbar.onclick = e => {
