@@ -270,10 +270,10 @@ function formatArrayPreview(arr, formatter) {
 const COMMAND_GUIDE = {
     // 1. MEMORIES (PHOTO CARDS)
     '/addmemory': {
-        desc: 'Adds a new photo memory card to the "Us" section of the app.',
+        desc: 'Adds a new photo memory card to the bottom of the "Us" section of the app.',
         mediaNote: 'Send a Photo with this command as the Caption (or send as text with an Image URL as the 4th part).',
         format: '/addmemory 2026-10-21 | Birthday Surprise | An unforgettable romantic evening together',
-        preview: (c) => `Total Memories: <b>${c.memories.length}</b>`
+        preview: (c) => formatArrayPreview(c.memories, m => `<b>${escapeHtml(m.title)}</b> (${escapeHtml(m.date)})`)
     },
     '/editmemory': {
         desc: 'Edits an existing memory card by its number (1, 2, 3...). If you attach a new photo with this caption, the old photo on GitHub will be automatically replaced and deleted.',
@@ -284,6 +284,11 @@ const COMMAND_GUIDE = {
     '/delmemory': {
         desc: 'Removes a memory card by its number (or "all") and permanently deletes its image file from GitHub storage.',
         format: '/delmemory 1',
+        preview: (c) => formatArrayPreview(c.memories, m => `<b>${escapeHtml(m.title)}</b> (${escapeHtml(m.date)})`)
+    },
+    '/reversememories': {
+        desc: 'Reverses the order of existing memory cards so that older memories appear at the top and newer ones at the bottom.',
+        format: '/reversememories confirm',
         preview: (c) => formatArrayPreview(c.memories, m => `<b>${escapeHtml(m.title)}</b> (${escapeHtml(m.date)})`)
     },
 
@@ -461,7 +466,7 @@ const COMMAND_GUIDE = {
 
     // 6. OPEN WHEN ENVELOPES
     '/addenvelope': {
-        desc: 'Adds a new "Open When..." secret letter envelope to the Inbox tab.',
+        desc: 'Adds a new "Open When..." secret letter envelope to the bottom of the Inbox list.',
         format: '/addenvelope Open when you miss me | Close your eyes and feel my warm hug, my love.',
         preview: (c) => formatArrayPreview(c.envelopes, e => `<b>${escapeHtml(e.title)}</b>`)
     },
@@ -478,7 +483,7 @@ const COMMAND_GUIDE = {
 
     // 7. LOVE COUPONS (WEEKLY REDEEM SYSTEM)
     '/addcoupon': {
-        desc: 'Adds a new redeemable Love Coupon to the Inbox tab (Anuki can redeem 1 coupon per week / 7 days).',
+        desc: 'Adds a new redeemable Love Coupon to the bottom of the Coupons list (Anuki can redeem 1 coupon per week / 7 days).',
         format: '/addcoupon Free Movie Night | Redeem anytime for a cozy movie date with snacks!',
         preview: (c) => formatArrayPreview(c.coupons, cp => `<b>${escapeHtml(cp.title)}</b> - ${escapeHtml(cp.desc)}`)
     },
@@ -495,7 +500,7 @@ const COMMAND_GUIDE = {
 
     // 8. TIME-LOCKED VAULTS
     '/addvault': {
-        desc: 'Adds a new Time-Locked Surprise Vault that unlocks on a specific date & time.',
+        desc: 'Adds a new Time-Locked Surprise Vault to the bottom of the Vaults list.',
         mediaNote: 'Optional: Attach a Photo with this command as the Caption to include a secret image inside the vault.',
         format: '/addvault Birthday Midnight Box | 2026-10-21 00:00:00 | Wait until midnight! | Happy Birthday My Queen! | Wishing you the happiest birthday ever!',
         preview: (c) => formatArrayPreview(c.time_vaults, v => `<b>${escapeHtml(v.title)}</b> (Unlocks: ${escapeHtml(v.unlock_date)})`)
@@ -514,7 +519,7 @@ const COMMAND_GUIDE = {
 
     // 9. REASONS I LOVE YOU
     '/addreason': {
-        desc: 'Adds a new item to the "Reasons I Love You" generator.',
+        desc: 'Adds a new item to the bottom of the "Reasons I Love You" list.',
         format: '/addreason Reason #5: I love the way your eyes sparkle whenever you smile at me.',
         preview: (c) => formatArrayPreview(c.interactive.love_reasons, r => escapeHtml(r))
     },
@@ -531,7 +536,7 @@ const COMMAND_GUIDE = {
 
     // 10. FORTUNE COOKIES
     '/addfortune': {
-        desc: 'Adds a new surprise message to the Fortune Cookie game.',
+        desc: 'Adds a new surprise message to the bottom of the Fortune Cookie list.',
         format: '/addfortune A romantic surprise from Rivishan is coming your way very soon!',
         preview: (c) => formatArrayPreview(c.interactive.fortune_cookies, f => escapeHtml(f))
     },
@@ -548,7 +553,7 @@ const COMMAND_GUIDE = {
 
     // 11. QUIZ QUESTIONS
     '/addquiz': {
-        desc: 'Adds a new multiple-choice question to the Couple Quiz game (Options separated by commas, Answer index starts at 0 for first option).',
+        desc: 'Adds a new multiple-choice question to the bottom of the Couple Quiz game (Options separated by commas, Answer index starts at 0 for first option).',
         format: '/addquiz What is our anniversary date? | 2023 Jan 17, 2023 Feb 14, 2022 Oct 21 | 0',
         preview: (c) => formatArrayPreview(c.quiz, q => `<b>${escapeHtml(q.q)}</b> (Ans: #${q.answer_index})`)
     },
@@ -565,7 +570,7 @@ const COMMAND_GUIDE = {
 
     // 12. BUCKET LIST
     '/addbucket': {
-        desc: 'Adds a new dream or goal to Our Future Bucket List (status can be true or false).',
+        desc: 'Adds a new dream or goal to the bottom of Our Future Bucket List (status can be true or false).',
         format: '/addbucket Travel to the hill country together by train | false',
         preview: (c) => formatArrayPreview(c.bucket_list, b => `${b.done ? '✅' : '⬜'} ${escapeHtml(b.task)}`)
     },
@@ -582,7 +587,7 @@ const COMMAND_GUIDE = {
 
     // 13. STORY CHAPTERS
     '/addstory': {
-        desc: 'Adds a new chapter to Our Love Story in the "Us" tab.',
+        desc: 'Adds a new chapter to the bottom of Our Love Story in the "Us" tab.',
         format: '/addstory Chapter 3: Endless Love | Every single day with you feels like a beautiful dream.',
         preview: (c) => formatArrayPreview(c.story_chapters, s => `<b>${escapeHtml(s.chapter)}</b>`)
     },
@@ -599,7 +604,7 @@ const COMMAND_GUIDE = {
 
     // 14. PRIVATE DICTIONARY
     '/adddict': {
-        desc: 'Adds a special word and its meaning to Our Private Love Dictionary.',
+        desc: 'Adds a special word and its meaning to the bottom of Our Private Love Dictionary.',
         format: '/adddict Manika | The most precious gem in Rivishan\'s life',
         preview: (c) => formatArrayPreview(c.interactive.private_dictionary, d => `<b>${escapeHtml(d.word)}</b>: ${escapeHtml(d.meaning)}`)
     },
@@ -616,7 +621,7 @@ const COMMAND_GUIDE = {
 
     // 15. HOURLY SECRET THOUGHTS
     '/addthought': {
-        desc: 'Adds a new message to the Hourly Secret Thoughts list shown on the Home tab.',
+        desc: 'Adds a new message to the bottom of the Hourly Secret Thoughts list shown on the Home tab.',
         format: '/addthought Right now I am thinking about your beautiful smile.',
         preview: (c) => formatArrayPreview(c.auto_pilot.hourly_thoughts, t => escapeHtml(t))
     },
@@ -633,7 +638,7 @@ const COMMAND_GUIDE = {
 
     // 16. AUTO-ROTATING MESSAGE POOL
     '/addautopool': {
-        desc: 'Adds a new romantic quote to the Auto-Rotating Message Pool on the Home tab.',
+        desc: 'Adds a new romantic quote to the bottom of the Auto-Rotating Message Pool on the Home tab.',
         format: '/addautopool Ever since you came into my life, every moment has been magical.',
         preview: (c) => formatArrayPreview(c.auto_pilot.auto_message_pool, p => escapeHtml(p))
     },
@@ -650,7 +655,7 @@ const COMMAND_GUIDE = {
 
     // 17. WRONG PIN CUTE MESSAGES
     '/addwrongpin': {
-        desc: 'Adds a cute/teasing message displayed when Anuki enters the wrong PIN on the Lock Screen.',
+        desc: 'Adds a cute/teasing message to the bottom of the Wrong PIN messages list.',
         format: '/addwrongpin Did you forget our special anniversary date, my love? Try again!',
         preview: (c) => formatArrayPreview(c.security.wrong_pin_messages, w => escapeHtml(w))
     },
@@ -672,7 +677,7 @@ const COMMAND_GUIDE = {
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
     },
     '/addlyric': {
-        desc: 'Adds a new lyric line to Our Song Lyrics list.',
+        desc: 'Adds a new lyric line to the bottom of Our Song Lyrics list.',
         format: '/addlyric My heart beats only for you, Anuki...',
         preview: (c) => formatArrayPreview(c.media.song_lyrics, l => escapeHtml(l))
     },
@@ -709,7 +714,7 @@ const COMMAND_GUIDE = {
         preview: (c) => `Current Poll: <b>${escapeHtml(c.interactive.live_poll.question)}</b>`
     },
     '/addpollopt': {
-        desc: 'Adds a single new activity option to the existing Weekly Poll list (so Anuki has new choices to pick from!).',
+        desc: 'Adds a single new activity option to the bottom of the existing Weekly Poll list.',
         format: '/addpollopt Watch the sunset at the beach 🌅',
         preview: (c) => formatArrayPreview(c.interactive.live_poll.options, o => escapeHtml(o))
     },
@@ -1343,7 +1348,7 @@ module.exports = async (req, res) => {
         // ====================================================================
 
         // --------------------------------------------------------------------
-        // 1. MEMORIES (/addmemory, /editmemory, /delmemory)
+        // 1. MEMORIES (/addmemory, /editmemory, /delmemory, /reversememories)
         // --------------------------------------------------------------------
         if (cmd === '/addmemory') {
             if (!hasPhoto && parts.length < 3) {
@@ -1363,14 +1368,26 @@ module.exports = async (req, res) => {
                 description: parts[2] || (parts[0] && parts.length === 1 ? parts[0] : "An unforgettable moment together."),
                 image_url: imageUrl
             };
-            config.memories.unshift(newMemory);
+            // Appends to the bottom of the memories list
+            config.memories.push(newMemory);
             await updateGitHubConfig(config, sha, 'Add new memory');
             await sendTelegram(
                 chatId,
-                `📸 <b>New Memory Added Successfully!</b>\n\n` +
+                `📸 <b>New Memory Added to Bottom (#${config.memories.length})!</b>\n\n` +
                 `• <b>Date:</b> ${escapeHtml(newMemory.date)}\n` +
                 `• <b>Title:</b> ${escapeHtml(newMemory.title)}\n` +
                 `• <b>Description:</b> ${escapeHtml(newMemory.description)}`
+            );
+            return res.status(200).send('OK');
+        }
+
+        if (cmd === '/reversememories') {
+            config.memories.reverse();
+            await updateGitHubConfig(config, sha, 'Reverse memories order');
+            await sendTelegram(
+                chatId,
+                `🔄 <b>Memories Order Reversed Successfully!</b>\n` +
+                `Your first memory is now at the top, and newer memories follow below it.`
             );
             return res.status(200).send('OK');
         }
@@ -2142,7 +2159,7 @@ module.exports = async (req, res) => {
         // 15. HOURLY THOUGHTS (/addthought, /editthought, /delthought)
         // --------------------------------------------------------------------
         if (cmd === '/addthought') {
-            config.auto_pilot.hourly_thoughts.unshift(argStr);
+            config.auto_pilot.hourly_thoughts.push(argStr);
             await updateGitHubConfig(config, sha, 'Add hourly thought');
             await sendTelegram(chatId, `💭 <b>New Hourly Secret Thought Added!</b>\n"${escapeHtml(argStr)}"`);
             return res.status(200).send('OK');
@@ -2182,7 +2199,7 @@ module.exports = async (req, res) => {
         // 16. AUTO MESSAGE POOL (/addautopool, /editautopool, /delautopool)
         // --------------------------------------------------------------------
         if (cmd === '/addautopool') {
-            config.auto_pilot.auto_message_pool.unshift(argStr);
+            config.auto_pilot.auto_message_pool.push(argStr);
             await updateGitHubConfig(config, sha, 'Add auto pool message');
             await sendTelegram(chatId, `🔄 <b>New Auto-Rotating Pool Message Added!</b>\n"${escapeHtml(argStr)}"`);
             return res.status(200).send('OK');
@@ -2863,9 +2880,10 @@ function getHelpMessages() {
         `<i>Tap any command below! The bot will send 2 messages: (1) What it does + current items, and (2) A copy-ready format using <code>|</code>.</i>\n\n` +
 
         `📸 <b>1. Photo Memories & Media (Attach file + Caption):</b>\n` +
-        `• /addmemory — Add photo memory\n` +
+        `• /addmemory — Add photo memory (appends to bottom)\n` +
         `• /editmemory — Edit memory text or replace photo\n` +
         `• /delmemory — Delete memory & remove file from GitHub\n` +
+        `• /reversememories — Flip current memories order (top-to-bottom)\n` +
         `• /wallpaper | /editwallpaper | /delwallpaper — Custom App Wallpaper\n` +
         `• /scratch | /editscratch | /delscratch — Scratch Card Photo & Secret Text\n` +
         `• /voice | /editvoice | /delvoice — Voice Note Recording & Title\n` +
