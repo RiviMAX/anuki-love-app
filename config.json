@@ -1,5 +1,5 @@
 {
-  "app_version": 13,
+  "app_version": 14,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -169,10 +169,10 @@
   },
   "memories": [
     {
-      "date": "Our Special Sign",
-      "title": "අපේ ආදරයේ සංකේතය",
-      "description": "මෙක 2023 අපි යාලුවුන අලුත ඉදන්ම අපේ සංකේතය♥..",
-      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792444320122.jpg"
+      "date": "Our First Photograph",
+      "title": "අපේ පලවෙනි Photo එක එකට ගත්ත.",
+      "description": "2023 නත්තල් උත්සවෙ දවසෙ කට්ටියට හොරෙන් ගත්ත ෆොටො එක.",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792443421114.jpg"
     },
     {
       "date": "Our Second Photograph",
@@ -181,10 +181,10 @@
       "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792444040854.jpg"
     },
     {
-      "date": "Our First Photograph",
-      "title": "අපේ පලවෙනි Photo එක එකට ගත්ත.",
-      "description": "2023 නත්තල් උත්සවෙ දවසෙ කට්ටියට හොරෙන් ගත්ත ෆොටො එක.",
-      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792443421114.jpg"
+      "date": "Our Special Sign",
+      "title": "අපේ ආදරයේ සංකේතය",
+      "description": "මෙක 2023 අපි යාලුවුන අලුත ඉදන්ම අපේ සංකේතය♥..",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792444320122.jpg"
     }
   ],
   "envelopes": [
