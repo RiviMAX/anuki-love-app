@@ -167,6 +167,126 @@ h1 {
   color: var(--s);
 }
 
+/* ---------- Lyrics Video Player Card ---------- */
+.lyr-video-box {
+  position: relative;
+  background: radial-gradient(circle at 50% 15%, var(--p-soft), rgba(8, 5, 16, 0.85));
+  border: 1px solid var(--border-p);
+  border-radius: 18px;
+  padding: 18px 14px 14px;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.lyr-top-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.eq-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 12px;
+}
+
+.eq-bars i {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  background: var(--p);
+  border-radius: 2px;
+}
+
+.eq-bars.on i {
+  animation: eqBounce 0.7s ease-in-out infinite alternate;
+}
+.eq-bars.on i:nth-child(2) { animation-delay: 0.2s; background: var(--s); }
+.eq-bars.on i:nth-child(3) { animation-delay: 0.4s; }
+.eq-bars.on i:nth-child(4) { animation-delay: 0.15s; background: var(--s); }
+
+@keyframes eqBounce {
+  0% { height: 3px; }
+  100% { height: 12px; }
+}
+
+.lyr-stanza-stage {
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 4px;
+  animation: stanzaFade 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes stanzaFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lyr-line {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(248, 250, 252, 0.45);
+  transition: all 0.35s ease;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.lyr-line.past {
+  color: rgba(248, 250, 252, 0.65);
+}
+
+.lyr-line.active {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15.8px;
+  transform: scale(1.03);
+  background: rgba(225, 29, 72, 0.16);
+  border: 1px solid rgba(225, 29, 72, 0.32);
+  text-shadow: 0 0 14px var(--p-soft);
+}
+
+.lyr-progress-wrap {
+  margin: 12px 4px 10px;
+}
+
+.lyr-progress-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.lyr-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--p), var(--s));
+  border-radius: 999px;
+  transition: width 0.25s linear;
+}
+
+.lyr-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.lyr-controls .btn {
+  margin: 0;
+}
+
 /* ---------- Counters & Typography ---------- */
 .big {
   font-size: 42px;
@@ -808,6 +928,7 @@ const ls = {
 };
 
 let C, raw = '', tab = 'home', guest = false, mode = 'love', pin = '', wr = 0, prev = 0, q = { i: 0, s: 0 }, pool = '', plantFx = '';
+let lyrOffsetLines = 0, lastStanzaIdx = -1;
 
 const todayKey = () => {
   const d = new Date();
@@ -820,6 +941,13 @@ const fmtRemaining = ms => {
   const h = Math.floor((ms % 864e5) / 36e5);
   const m = Math.max(1, Math.floor((ms % 36e5) / 6e4));
   return d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+};
+
+const fmtTime = sec => {
+  if (!sec || isNaN(sec) || sec < 0) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
 };
 
 const post = (event, data = '') => {
@@ -907,6 +1035,204 @@ function checkRemoteReset() {
       if ($('#lock').hidden) toast(p.lastLog);
     }
     if (changed) ls.s('plant_v2', p);
+  }
+}
+
+/* ---------- 4-Line Lyrics Video Player Logic ---------- */
+const DEFAULT_FULL_LYRICS = [
+  "මගේ ළඟ නුඹ ඉන්නා මේ හැන්දෑව...",
+  "මතකයි අප ආ දුර මේ ගමන...",
+  "අතීතයම අද සුන්දර සිහිනයක් වෙලා,",
+  "නුඹත් එක්ක ගෙවන මේ ජීවිතය.",
+  "වැටුණු තැන්වල නුඹ මගේ අත අල්ලා,",
+  "හඬපු දවස්වල ළඟින්ම හිඳලා,",
+  "ලෝකයම අපිව වෙන් කරන්න හැදුවත්,",
+  "නුඹේ ආදරේ මාව තවත් බැඳලා.",
+  "කාලය ගෙවුණත් වෙනස් නොවී,",
+  "නුඹේ නමින්ම හුස්මක් වී,",
+  "අපි පැතූ ඒ ලස්සන ලෝකය,",
+  "අද අපි ළඟම හැබෑ වී...",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "නිහඬවම අපි දිනුවා නේද...",
+  "අකමැති වුණු ඒ මුළු ලෝකයම,",
+  "අද බලා ඉන්නවා නිහඬවම.",
+  "කඳුළු පිරුණු ඒ අතීතය,",
+  "අද සිනහවක් වී අප ළඟම,",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "සදා ඉමු අපි මේ ආදරේම.",
+  "හැමදේම දිනපු අපේ අද දවස...",
+  "මේ ලෝකෙට ආවා අපගේ කුමරිය...",
+  "ගෙවෙනා හැම තත්පරේම පිරුණා ආදරය,",
+  "එදා වගේම ඉමු අපි සදා සතුටින්ම.",
+  "පුංචි අතකින් අපේ අත් අල්ලා,",
+  "අලුත් සිහිනයක් අප ළඟට ගෙනැල්ලා,",
+  "අපේ ආදරේ තවත් ලස්සන කරලා,",
+  "පුංචි සුරංගනාවියක් වගේ ආවා...",
+  "ඇගේ සිනහවෙන් නිවසම පිරුණා,",
+  "ඇගේ කතාවෙන් හදවත් හිනැහුණා,",
+  "අපි පැතූ ජීවිතේ සම්පූර්ණ වෙලා,",
+  "අපේ ලෝකයම අද ලස්සන වුණා.",
+  "ඊයේ තිබුණ දුක අමතක කරලා,",
+  "හෙට දවස ගැන සිහින මවලා,",
+  "නුඹයි ඇයයි ළඟින් තියාගෙන,",
+  "මගේ ජීවිතේම සතුට කරලා...",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "නිහඬවම අපි දිනුවා නේද...",
+  "අකමැති වුණු ඒ මුළු ලෝකයම,",
+  "අද බලා ඉන්නවා නිහඬවම.",
+  "කඳුළු පිරුණු ඒ අතීතය,",
+  "අද සිනහවක් වී අප ළඟම,",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "සදා ඉමු අපි මේ ආදරේම.",
+  "හෙට දවස කොහොම වේද දන්නේ නෑ,",
+  "ඒත් නුඹේ අත මම අතහරින්නේ නෑ...",
+  "සුළඟක් වගේ කාලය ගියත්,",
+  "මේ ආදරේ නම් මැකෙන්නේ නෑ.",
+  "අපි දෙන්නා ගිය ඒ පාර දිගේ,",
+  "අද අපේ කුමරියත් ඇවිදිනවා වගේ,",
+  "අපි පැතූ හැම සිහිනයක්ම,",
+  "අද අපේ ඇස් ඉදිරියේම පෙනෙනවා වගේ.",
+  "වයස ගියත් නුඹේ අත අල්ලන්,",
+  "ඉමු අපි දෙන්නා එදා වගේම,",
+  "අපේ දුවත් ලොකු වී දුර ගියත්,",
+  "ඇගේ මතක අපි ළඟ තියේවි සදාම.",
+  "කොච්චර දුර කාලය ගියත්,",
+  "අපේ කතාව අවසන් වෙන්නේ නෑ...",
+  "මේ හදවත නුඹව තෝරාගත් දවසේ,",
+  "ඒ තේරීම කිසිදා වෙනස් වෙන්නේ නෑ.",
+  "එදා නොපිළිගත් අපේ ආදරය,",
+  "කාලය එක්කම ජයගත්තා නේද...",
+  "අපිව වෙන් කරන්න හැදූ ඒ ලෝකයම,",
+  "අද අපේ සතුට දිහා බලනවා නේද...",
+  "නුඹ මගේ වී, මම නුඹේ වී,",
+  "අපේ කුමරියත් ළඟින් තියාගෙන,",
+  "ජීවිතේ අවසන් හුස්ම තෙක්ම,",
+  "ඉමු අපි තුන්දෙනා ආදරෙන්ම...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "නුඹ ළඟ ඉන්නා හැම මොහොතම...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "අපේ පුංචි ලෝකය තරම්...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "අපි දෙන්නාගේ කතාව තරම්...",
+  "ආදරේ... කෙතරම් සොඳුරුද...",
+  "සදාකල්ම නුඹ මගේ නම්..."
+];
+
+// Parses raw lyrics array (even if pasted as multi-line blocks or with **(Verse)** headers) into clean lines
+function getCleanLyricLines() {
+  const rawArr = C?.media?.song_lyrics || [];
+  let lines = [];
+  for (const item of rawArr) {
+    const splitLines = String(item).split(/\r?\n/);
+    for (const l of splitLines) {
+      const clean = l.trim();
+      if (!clean) continue;
+      if (/^\*\*.*\*\*$/.test(clean) || /^\(.*\)$/.test(clean)) continue;
+      lines.push(clean);
+    }
+  }
+  // If config still has the 4 default placeholder lines, automatically use the full 68-line song lyrics
+  if (lines.length <= 4) return DEFAULT_FULL_LYRICS;
+  return lines;
+}
+
+function getActiveLyricPosition() {
+  const lines = getCleanLyricLines();
+  const totalLines = lines.length;
+  const totalStanzas = Math.ceil(totalLines / 4);
+  const dur = au.duration && isFinite(au.duration) && au.duration > 10 ? au.duration : 319;
+  const cur = au.currentTime || 0;
+
+  // Map song time (accounting for ~8s intro & ~10s outro) to lyric line index
+  const intro = Math.min(8, dur * 0.03);
+  const singingSpan = Math.max(20, dur - intro - 8);
+  const effTime = Math.max(0, cur - intro);
+  const autoLineIdx = Math.floor((effTime / singingSpan) * totalLines);
+
+  const lineIdx = Math.max(0, Math.min(totalLines - 1, autoLineIdx + lyrOffsetLines));
+  const stanzaIdx = Math.floor(lineIdx / 4);
+  const lineInStanza = lineIdx % 4;
+
+  return { lines, totalLines, totalStanzas, stanzaIdx, lineInStanza, cur, dur };
+}
+
+function renderLyricsVideoCard() {
+  const M = C.media;
+  if (!M.song_lyrics?.length && !M.bg_music_url) return '';
+  const { lines, totalStanzas, stanzaIdx, lineInStanza, cur, dur } = getActiveLyricPosition();
+  const stanzaLines = lines.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
+  const isPlaying = !au.paused && mOn;
+  const pct = Math.min(100, (cur / dur) * 100).toFixed(1);
+  lastStanzaIdx = stanzaIdx;
+
+  return card(
+    `<span>🎶 Our Song & Lyrics Video</span><span class="badge" id="lyr_badge">Verse ${stanzaIdx + 1} / ${totalStanzas}</span>`,
+    `<div class="lyr-video-box">
+      <div class="lyr-top-meta">
+        <span style="display:inline-flex;align-items:center;gap:6px">
+          <span class="eq-bars ${isPlaying ? 'on' : ''}" id="lyr_eq"><i></i><i></i><i></i><i></i></span>
+          <span id="lyr_status">${isPlaying ? 'Now Singing...' : 'Paused'}</span>
+        </span>
+        <span id="lyr_time">${fmtTime(cur)} / ${fmtTime(dur)}</span>
+      </div>
+
+      <div class="lyr-stanza-stage" id="lyr_stage">
+        ${stanzaLines.map((ln, idx) => {
+          const cls = idx === lineInStanza ? 'active' : idx < lineInStanza ? 'past' : '';
+          return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(ln)}</div>`;
+        }).join('')}
+      </div>
+
+      <div class="lyr-progress-wrap">
+        <div class="lyr-progress-bar" id="lyr_pbar" title="Tap to seek song">
+          <div class="lyr-progress-fill" id="lyr_pfill" style="width:${pct}%"></div>
+        </div>
+      </div>
+
+      <div class="lyr-controls">
+        <button class="btn" data-a="lyr_prev" title="Previous 4 Lines">⏮</button>
+        <button class="btn p" id="song_btn" data-a="song" style="min-width:155px">${isPlaying ? '⏸ Pause Our Song' : '▶ Play Our Song'}</button>
+        <button class="btn" data-a="lyr_next" title="Next 4 Lines">⏭</button>
+      </div>
+    </div>`
+  );
+}
+
+// Live updates the 4-line Lyrics Video player smoothly as the song plays
+function syncLyricsDisplay() {
+  const stage = $('#lyr_stage');
+  if (!stage || !C) return;
+  const { lines, totalStanzas, stanzaIdx, lineInStanza, cur, dur } = getActiveLyricPosition();
+  const isPlaying = !au.paused && mOn;
+
+  const badge = $('#lyr_badge');
+  if (badge) badge.textContent = `Verse ${stanzaIdx + 1} / ${totalStanzas}`;
+  const timeEl = $('#lyr_time');
+  if (timeEl) timeEl.textContent = `${fmtTime(cur)} / ${fmtTime(dur)}`;
+  const pfill = $('#lyr_pfill');
+  if (pfill) pfill.style.width = `${Math.min(100, (cur / dur) * 100).toFixed(1)}%`;
+  const eq = $('#lyr_eq');
+  if (eq) eq.classList.toggle('on', isPlaying);
+  const st = $('#lyr_status');
+  if (st) st.textContent = isPlaying ? 'Now Singing...' : 'Paused';
+
+  // If moved to a new 4-line stanza, animate in the new 4 lines
+  if (stanzaIdx !== lastStanzaIdx) {
+    lastStanzaIdx = stanzaIdx;
+    const stanzaLines = lines.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
+    stage.style.animation = 'none';
+    stage.offsetHeight; // trigger reflow for smooth fade animation
+    stage.style.animation = '';
+    stage.innerHTML = stanzaLines.map((ln, idx) => {
+      const cls = idx === lineInStanza ? 'active' : idx < lineInStanza ? 'past' : '';
+      return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(ln)}</div>`;
+    }).join('');
+  } else {
+    // Highlight the current line within the active 4-line stanza
+    stage.querySelectorAll('.lyr-line').forEach((el, idx) => {
+      el.classList.toggle('active', idx === lineInStanza);
+      el.classList.toggle('past', idx < lineInStanza);
+    });
   }
 }
 
@@ -1318,6 +1644,12 @@ const bdayAu = new Audio();
 const hintAu = new Audio();
 let mOn = true, bdayTimer = null, synthTimer = null;
 
+// Sync Lyrics Video UI on audio timeupdate, play, pause
+au.addEventListener('timeupdate', syncLyricsDisplay);
+au.addEventListener('play', syncLyricsDisplay);
+au.addEventListener('pause', syncLyricsDisplay);
+au.addEventListener('loadedmetadata', syncLyricsDisplay);
+
 const bgUrl = () => mode === 'avurudu' ? C.media.avurudu_music_url : C.media.bg_music_url;
 
 function playBg(force) {
@@ -1328,12 +1660,10 @@ function playBg(force) {
   au.play().catch(() => {});
 }
 
-// Temporarily pauses background music when Voice Note, Hint, or Birthday clip plays
 function pauseBgForOtherAudio() {
   if (!au.paused) au.pause();
 }
 
-// Automatically resumes background music when Voice Note, Hint, or Birthday clip finishes
 function resumeBgIfEnabled() {
   if (!mOn) return;
   const vEl = $('#vn_au');
@@ -1353,13 +1683,11 @@ function stopBdayMusicAndResume() {
   resumeBgIfEnabled();
 }
 
-// Built-in Web Audio Music Box "Happy Birthday" melody fallback (plays if MP3 is missing or blocked)
 function playHappyBirthdaySynth(durationMs = 16000) {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return resumeBgIfEnabled();
     const ctx = new AC();
-    // Notes for "Happy Birthday to You" (Frequency in Hz, duration in beats)
     const notes = [
       [261.6, 0.75], [261.6, 0.25], [293.7, 1], [261.6, 1], [349.2, 1], [329.6, 2],
       [261.6, 0.75], [261.6, 0.25], [293.7, 1], [261.6, 1], [392.0, 1], [349.2, 2],
@@ -1393,7 +1721,6 @@ function playHappyBirthdaySynth(durationMs = 16000) {
   }
 }
 
-// Plays the Birthday Song snippet for 20 seconds when candles are blown out, then resumes background music
 function playBirthdaySnippet() {
   pauseBgForOtherAudio();
   clearTimeout(bdayTimer);
@@ -1404,7 +1731,6 @@ function playBirthdaySnippet() {
     bdayAu.currentTime = 0;
     bdayAu.onended = () => stopBdayMusicAndResume();
     bdayAu.play().then(() => {
-      // Stop after 20 seconds and automatically return to background music
       bdayTimer = setTimeout(() => stopBdayMusicAndResume(), 20000);
     }).catch(() => {
       playHappyBirthdaySynth(16000);
@@ -1423,6 +1749,8 @@ $('#mu').onclick = () => {
     au.pause();
     if (!bdayAu.paused) bdayAu.pause();
   }
+  const sb = $('#song_btn');
+  if (sb) sb.textContent = (!au.paused && mOn) ? '⏸ Pause Our Song' : '▶ Play Our Song';
 };
 
 /* ---------- Security Lock Screen ---------- */
@@ -1575,7 +1903,7 @@ const V = {
   },
 
   us() {
-    const M = C.media, I = C.interactive;
+    const I = C.interactive;
     let h = '';
     if (C.memories?.length) {
       h += C.memories.map(m => card('📸 Special Memory', `<div class="mem">${m.image_url ? `<img loading="lazy" src="${esc(m.image_url)}" alt="" onerror="this.remove()">` : ''}<span class="mem-date">${esc(m.date)}</span><b>${esc(m.title)}</b><p>${esc(m.description)}</p></div>`)).join('');
@@ -1583,10 +1911,7 @@ const V = {
     if (C.story_chapters?.length) {
       h += C.story_chapters.map(s => card('📖 ' + esc(s.chapter), `<p>${esc(s.text)}</p>`, 'c2')).join('');
     }
-    if (M.song_lyrics?.length || M.bg_music_url) {
-      const isPlaying = !au.paused && mOn;
-      h += card('🎶 Our Song & Lyrics', (M.song_lyrics || []).map(l => `<p style="margin-bottom:4px">♪ ${esc(l)}</p>`).join('') + (M.bg_music_url ? `<button class="btn p" id="song_btn" style="margin-top:10px" data-a="song">${isPlaying ? '⏸ Pause Our Song' : '▶ Play Our Song'}</button>` : ''));
-    }
+    h += renderLyricsVideoCard();
     if (I.love_reasons?.length) {
       h += card('❤️ Reasons Why I Love You', `<p id="rs" style="margin-bottom:10px">${esc(rnd(I.love_reasons))}</p><button class="btn" data-a="rs">Another Reason 💞</button>`, 'c2');
     }
@@ -1684,7 +2009,20 @@ function render() {
   tick();
   if ($('#scv')) scratch();
 
-  // Auto-pause background music when Voice Note plays, and auto-resume when Voice Note finishes or pauses
+  // Seek bar click handler on Lyrics Video Card
+  const pbar = $('#lyr_pbar');
+  if (pbar) {
+    pbar.onclick = e => {
+      const r = pbar.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+      if (au.duration && isFinite(au.duration)) {
+        au.currentTime = ratio * au.duration;
+        lyrOffsetLines = 0;
+        syncLyricsDisplay();
+      }
+    };
+  }
+
   const vn = $('#vn_au');
   if (vn) {
     vn.addEventListener('play', () => {
@@ -1769,14 +2107,24 @@ const A = {
       au.pause();
       $('#mu').style.opacity = 0.45;
       if (b) b.textContent = '▶ Play Our Song';
+      syncLyricsDisplay();
       toast('⏸ Song paused');
     } else {
       mOn = true;
       playBg(true);
       $('#mu').style.opacity = 1;
       if (b) b.textContent = '⏸ Pause Our Song';
+      syncLyricsDisplay();
       toast('🎶 Playing our song...');
     }
+  },
+  lyr_prev() {
+    lyrOffsetLines -= 4;
+    syncLyricsDisplay();
+  },
+  lyr_next() {
+    lyrOffsetLines += 4;
+    syncLyricsDisplay();
   },
   blow() {
     const c = $('#cake');
@@ -1831,7 +2179,6 @@ const A = {
   },
   fc() { $('#fc').textContent = rnd(C.interactive.fortune_cookies); },
 
-  // 1. Weekly 2-Pick Poll Action
   poll(i) {
     const P = C.interactive.live_poll;
     const chosen = P.options[i];
@@ -1855,7 +2202,6 @@ const A = {
     render();
   },
 
-  // 2. 365-Day Love Plant Care Action (Water, Sunlight, Fertilizer)
   pcare(type) {
     const p = getPlantState();
     const tk = todayKey();
@@ -1953,7 +2299,6 @@ const A = {
     post('envelope_opened', e.title);
   },
 
-  // 3. Weekly Love Coupon Redeem Action
   cp(id) {
     const st = getCouponState();
     if (st.lastRedeemAt && Date.now() - st.lastRedeemAt < WEEK_MS) {
