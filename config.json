@@ -1,5 +1,5 @@
 {
-  "app_version": 16,
+  "app_version": 17,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -311,8 +311,8 @@
     }
   ],
   "system_reset": {
-    "reset_id": 1,
+    "reset_id": 2,
     "target": "all",
-    "timestamp": 1792442000036
+    "timestamp": 1792518676646
   }
 }
