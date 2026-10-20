@@ -165,9 +165,10 @@ h1 {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
   color: var(--s);
+  user-select: none;
 }
 
-/* ---------- Lyrics Video Player Card ---------- */
+/* ---------- Lyrics Video Player Card & Secret Sync Studio ---------- */
 .lyr-video-box {
   position: relative;
   background: radial-gradient(circle at 50% 15%, var(--p-soft), rgba(8, 5, 16, 0.85));
@@ -235,13 +236,13 @@ h1 {
   font-size: 14.5px;
   line-height: 1.5;
   color: rgba(248, 250, 252, 0.45);
-  transition: all 0.35s ease;
-  padding: 2px 6px;
+  transition: all 0.3s ease;
+  padding: 3px 8px;
   border-radius: 8px;
 }
 
 .lyr-line.past {
-  color: rgba(248, 250, 252, 0.65);
+  color: rgba(248, 250, 252, 0.68);
 }
 
 .lyr-line.active {
@@ -249,8 +250,8 @@ h1 {
   font-weight: 700;
   font-size: 15.8px;
   transform: scale(1.03);
-  background: rgba(225, 29, 72, 0.16);
-  border: 1px solid rgba(225, 29, 72, 0.32);
+  background: rgba(225, 29, 72, 0.18);
+  border: 1px solid rgba(225, 29, 72, 0.38);
   text-shadow: 0 0 14px var(--p-soft);
 }
 
@@ -260,7 +261,7 @@ h1 {
 
 .lyr-progress-bar {
   width: 100%;
-  height: 5px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   overflow: hidden;
@@ -272,7 +273,7 @@ h1 {
   width: 0%;
   background: linear-gradient(90deg, var(--p), var(--s));
   border-radius: 999px;
-  transition: width 0.25s linear;
+  transition: width 0.2s linear;
 }
 
 .lyr-controls {
@@ -285,6 +286,44 @@ h1 {
 
 .lyr-controls .btn {
   margin: 0;
+}
+
+/* Secret Tap-Sync Studio Box */
+.sync-studio {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px dashed var(--s);
+  text-align: center;
+}
+
+.sync-next-preview {
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  font-size: 13.5px;
+  color: #fff;
+}
+
+.sync-tap-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 14px;
+  margin: 6px 0;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border: 1px solid var(--s);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.3);
+}
+
+.sync-tap-btn:active {
+  transform: scale(0.97);
 }
 
 /* ---------- Counters & Typography ---------- */
@@ -929,6 +968,8 @@ const ls = {
 
 let C, raw = '', tab = 'home', guest = false, mode = 'love', pin = '', wr = 0, prev = 0, q = { i: 0, s: 0 }, pool = '', plantFx = '';
 let lyrOffsetLines = 0, lastStanzaIdx = -1;
+// Secret Lyrics Sync Studio state (unlocked by 5 rapid taps on Verse badge)
+let syncMode = false, syncCursor = 0, syncTimes = [], badgeTapCount = 0, badgeTapTimer = null;
 
 const todayKey = () => {
   const d = new Date();
@@ -948,6 +989,12 @@ const fmtTime = sec => {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${String(s).padStart(2, '0')}`;
+};
+
+const fmtLrcTag = sec => {
+  const m = String(Math.floor(sec / 60)).padStart(2, '0');
+  const s = (sec % 60).toFixed(2).padStart(5, '0');
+  return `[${m}:${s}]`;
 };
 
 const post = (event, data = '') => {
@@ -1038,135 +1085,115 @@ function checkRemoteReset() {
   }
 }
 
-/* ---------- 4-Line Lyrics Video Player Logic ---------- */
-const DEFAULT_FULL_LYRICS = [
-  "මගේ ළඟ නුඹ ඉන්නා මේ හැන්දෑව...",
-  "මතකයි අප ආ දුර මේ ගමන...",
-  "අතීතයම අද සුන්දර සිහිනයක් වෙලා,",
-  "නුඹත් එක්ක ගෙවන මේ ජීවිතය.",
-  "වැටුණු තැන්වල නුඹ මගේ අත අල්ලා,",
-  "හඬපු දවස්වල ළඟින්ම හිඳලා,",
-  "ලෝකයම අපිව වෙන් කරන්න හැදුවත්,",
-  "නුඹේ ආදරේ මාව තවත් බැඳලා.",
-  "කාලය ගෙවුණත් වෙනස් නොවී,",
-  "නුඹේ නමින්ම හුස්මක් වී,",
-  "අපි පැතූ ඒ ලස්සන ලෝකය,",
-  "අද අපි ළඟම හැබෑ වී...",
-  "එදා නොපිළිගත් අපේ ආදරය,",
-  "නිහඬවම අපි දිනුවා නේද...",
-  "අකමැති වුණු ඒ මුළු ලෝකයම,",
-  "අද බලා ඉන්නවා නිහඬවම.",
-  "කඳුළු පිරුණු ඒ අතීතය,",
-  "අද සිනහවක් වී අප ළඟම,",
-  "නුඹ මගේ වී, මම නුඹේ වී,",
-  "සදා ඉමු අපි මේ ආදරේම.",
-  "හැමදේම දිනපු අපේ අද දවස...",
-  "මේ ලෝකෙට ආවා අපගේ කුමරිය...",
-  "ගෙවෙනා හැම තත්පරේම පිරුණා ආදරය,",
-  "එදා වගේම ඉමු අපි සදා සතුටින්ම.",
-  "පුංචි අතකින් අපේ අත් අල්ලා,",
-  "අලුත් සිහිනයක් අප ළඟට ගෙනැල්ලා,",
-  "අපේ ආදරේ තවත් ලස්සන කරලා,",
-  "පුංචි සුරංගනාවියක් වගේ ආවා...",
-  "ඇගේ සිනහවෙන් නිවසම පිරුණා,",
-  "ඇගේ කතාවෙන් හදවත් හිනැහුණා,",
-  "අපි පැතූ ජීවිතේ සම්පූර්ණ වෙලා,",
-  "අපේ ලෝකයම අද ලස්සන වුණා.",
-  "ඊයේ තිබුණ දුක අමතක කරලා,",
-  "හෙට දවස ගැන සිහින මවලා,",
-  "නුඹයි ඇයයි ළඟින් තියාගෙන,",
-  "මගේ ජීවිතේම සතුට කරලා...",
-  "එදා නොපිළිගත් අපේ ආදරය,",
-  "නිහඬවම අපි දිනුවා නේද...",
-  "අකමැති වුණු ඒ මුළු ලෝකයම,",
-  "අද බලා ඉන්නවා නිහඬවම.",
-  "කඳුළු පිරුණු ඒ අතීතය,",
-  "අද සිනහවක් වී අප ළඟම,",
-  "නුඹ මගේ වී, මම නුඹේ වී,",
-  "සදා ඉමු අපි මේ ආදරේම.",
-  "හෙට දවස කොහොම වේද දන්නේ නෑ,",
-  "ඒත් නුඹේ අත මම අතහරින්නේ නෑ...",
-  "සුළඟක් වගේ කාලය ගියත්,",
-  "මේ ආදරේ නම් මැකෙන්නේ නෑ.",
-  "අපි දෙන්නා ගිය ඒ පාර දිගේ,",
-  "අද අපේ කුමරියත් ඇවිදිනවා වගේ,",
-  "අපි පැතූ හැම සිහිනයක්ම,",
-  "අද අපේ ඇස් ඉදිරියේම පෙනෙනවා වගේ.",
-  "වයස ගියත් නුඹේ අත අල්ලන්,",
-  "ඉමු අපි දෙන්නා එදා වගේම,",
-  "අපේ දුවත් ලොකු වී දුර ගියත්,",
-  "ඇගේ මතක අපි ළඟ තියේවි සදාම.",
-  "කොච්චර දුර කාලය ගියත්,",
-  "අපේ කතාව අවසන් වෙන්නේ නෑ...",
-  "මේ හදවත නුඹව තෝරාගත් දවසේ,",
-  "ඒ තේරීම කිසිදා වෙනස් වෙන්නේ නෑ.",
-  "එදා නොපිළිගත් අපේ ආදරය,",
-  "කාලය එක්කම ජයගත්තා නේද...",
-  "අපිව වෙන් කරන්න හැදූ ඒ ලෝකයම,",
-  "අද අපේ සතුට දිහා බලනවා නේද...",
-  "නුඹ මගේ වී, මම නුඹේ වී,",
-  "අපේ කුමරියත් ළඟින් තියාගෙන,",
-  "ජීවිතේ අවසන් හුස්ම තෙක්ම,",
-  "ඉමු අපි තුන්දෙනා ආදරෙන්ම...",
-  "ආදරේ... කෙතරම් සොඳුරුද...",
-  "නුඹ ළඟ ඉන්නා හැම මොහොතම...",
-  "ආදරේ... කෙතරම් සොඳුරුද...",
-  "අපේ පුංචි ලෝකය තරම්...",
-  "ආදරේ... කෙතරම් සොඳුරුද...",
-  "අපි දෙන්නාගේ කතාව තරම්...",
-  "ආදරේ... කෙතරම් සොඳුරුද...",
-  "සදාකල්ම නුඹ මගේ නම්..."
-];
-
-// Parses raw lyrics array (even if pasted as multi-line blocks or with **(Verse)** headers) into clean lines
-function getCleanLyricLines() {
+/* ---------- 4-Line Lyrics Video Player + Exact Timestamp Sync ---------- */
+// Parses each line from config.json (supports "[mm:ss.xx] Lyric text" or plain text)
+function getLyricEntries() {
   const rawArr = C?.media?.song_lyrics || [];
-  let lines = [];
+  let entries = [];
   for (const item of rawArr) {
     const splitLines = String(item).split(/\r?\n/);
     for (const l of splitLines) {
       const clean = l.trim();
       if (!clean) continue;
       if (/^\*\*.*\*\*$/.test(clean) || /^\(.*\)$/.test(clean)) continue;
-      lines.push(clean);
+      const m = clean.match(/^\[(\d{1,2}):(\d{2}(?:\.\d{1,2})?)\]\s*(.*)$/);
+      if (m) {
+        const sec = parseInt(m[1], 10) * 60 + parseFloat(m[2]);
+        entries.push({ time: sec, text: m[3].trim() });
+      } else {
+        entries.push({ time: null, text: clean });
+      }
     }
   }
-  // If config still has the 4 default placeholder lines, automatically use the full 68-line song lyrics
-  if (lines.length <= 4) return DEFAULT_FULL_LYRICS;
-  return lines;
+  return entries;
 }
 
 function getActiveLyricPosition() {
-  const lines = getCleanLyricLines();
-  const totalLines = lines.length;
-  const totalStanzas = Math.ceil(totalLines / 4);
+  const entries = getLyricEntries();
+  const totalLines = entries.length || 1;
+  const totalStanzas = Math.max(1, Math.ceil(totalLines / 4));
   const dur = au.duration && isFinite(au.duration) && au.duration > 10 ? au.duration : 319;
   const cur = au.currentTime || 0;
 
-  // Map song time (accounting for ~8s intro & ~10s outro) to lyric line index
-  const intro = Math.min(8, dur * 0.03);
-  const singingSpan = Math.max(20, dur - intro - 8);
-  const effTime = Math.max(0, cur - intro);
-  const autoLineIdx = Math.floor((effTime / singingSpan) * totalLines);
+  // In Sync Studio mode, follow the active sync cursor
+  if (syncMode) {
+    const activeIdx = Math.max(0, Math.min(totalLines - 1, syncCursor > 0 ? syncCursor - 1 : 0));
+    return {
+      entries,
+      totalLines,
+      totalStanzas,
+      stanzaIdx: Math.floor(activeIdx / 4),
+      lineInStanza: activeIdx % 4,
+      cur,
+      dur,
+      hasExactTimestamps: true
+    };
+  }
 
-  const lineIdx = Math.max(0, Math.min(totalLines - 1, autoLineIdx + lyrOffsetLines));
+  // Check if lines have exact [mm:ss.xx] timestamps saved in config.json
+  const hasExactTimestamps = entries.some(e => e.time !== null);
+  let baseLineIdx = 0;
+
+  if (hasExactTimestamps) {
+    // Find the latest line whose timestamp has been reached by the audio player
+    let found = 0;
+    for (let i = 0; i < entries.length; i++) {
+      const t = syncTimes[i] !== undefined ? syncTimes[i] : entries[i].time;
+      if (t !== null && t !== undefined && cur >= t) {
+        found = i;
+      }
+    }
+    baseLineIdx = found;
+  } else {
+    // Fallback proportional calculation if timestamps haven't been tapped yet
+    const intro = Math.min(8, dur * 0.03);
+    const singingSpan = Math.max(20, dur - intro - 8);
+    const effTime = Math.max(0, cur - intro);
+    baseLineIdx = Math.floor((effTime / singingSpan) * totalLines);
+  }
+
+  const lineIdx = Math.max(0, Math.min(totalLines - 1, baseLineIdx + lyrOffsetLines));
   const stanzaIdx = Math.floor(lineIdx / 4);
   const lineInStanza = lineIdx % 4;
 
-  return { lines, totalLines, totalStanzas, stanzaIdx, lineInStanza, cur, dur };
+  return { entries, totalLines, totalStanzas, stanzaIdx, lineInStanza, cur, dur, hasExactTimestamps };
 }
 
 function renderLyricsVideoCard() {
   const M = C.media;
   if (!M.song_lyrics?.length && !M.bg_music_url) return '';
-  const { lines, totalStanzas, stanzaIdx, lineInStanza, cur, dur } = getActiveLyricPosition();
-  const stanzaLines = lines.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
+  const { entries, totalLines, totalStanzas, stanzaIdx, lineInStanza, cur, dur, hasExactTimestamps } = getActiveLyricPosition();
+  const stanzaEntries = entries.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
   const isPlaying = !au.paused && mOn;
   const pct = Math.min(100, (cur / dur) * 100).toFixed(1);
   lastStanzaIdx = stanzaIdx;
 
+  // Secret Studio Panel (only shown when Rivishan taps Verse badge 5 times)
+  let studioHtml = '';
+  if (syncMode) {
+    const nextEntry = entries[syncCursor];
+    const isFinished = syncCursor >= totalLines;
+    studioHtml = `<div class="sync-studio">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <b style="font-size:13px;color:var(--s)">🎛️ Lyrics Timing Studio (${syncCursor}/${totalLines})</b>
+        <button class="btn" style="padding:4px 10px;font-size:11.5px;margin:0" data-a="sync_exit">✖ Close</button>
+      </div>
+      <div class="sync-next-preview" id="sync_preview">
+        ${isFinished
+          ? `🎉 <b>All ${totalLines} lines marked!</b> Tap "Save to GitHub" below.`
+          : `<small style="color:var(--muted);display:block">Tap the blue button the moment you hear Line #${syncCursor + 1}:</small><b>"${esc(nextEntry?.text || '')}"</b>`}
+      </div>
+      ${!isFinished ? `<button class="sync-tap-btn" data-a="sync_tap">🎯 TAP NOW — Mark Line #${syncCursor + 1} (${fmtTime(cur)})</button>` : ''}
+      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn" data-a="sync_restart">🔄 Restart (0:00)</button>
+        <button class="btn" data-a="sync_undo" ${syncCursor === 0 ? 'disabled' : ''}>↩ Undo (-4s)</button>
+        <button class="btn p" data-a="sync_save" ${syncCursor === 0 ? 'disabled' : ''}>💾 Save to GitHub</button>
+      </div>
+    </div>`;
+  }
+
   return card(
-    `<span>🎶 Our Song & Lyrics Video</span><span class="badge" id="lyr_badge">Verse ${stanzaIdx + 1} / ${totalStanzas}</span>`,
+    `<span>🎶 Our Song & Lyrics Video</span><span class="badge" id="lyr_badge" data-a="lyr_secret" style="cursor:pointer" title="Verse Indicator">Verse ${stanzaIdx + 1} / ${totalStanzas} ${hasExactTimestamps ? '✓' : ''}</span>`,
     `<div class="lyr-video-box">
       <div class="lyr-top-meta">
         <span style="display:inline-flex;align-items:center;gap:6px">
@@ -1177,9 +1204,9 @@ function renderLyricsVideoCard() {
       </div>
 
       <div class="lyr-stanza-stage" id="lyr_stage">
-        ${stanzaLines.map((ln, idx) => {
+        ${stanzaEntries.map((en, idx) => {
           const cls = idx === lineInStanza ? 'active' : idx < lineInStanza ? 'past' : '';
-          return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(ln)}</div>`;
+          return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(en.text)}</div>`;
         }).join('')}
       </div>
 
@@ -1194,6 +1221,8 @@ function renderLyricsVideoCard() {
         <button class="btn p" id="song_btn" data-a="song" style="min-width:155px">${isPlaying ? '⏸ Pause Our Song' : '▶ Play Our Song'}</button>
         <button class="btn" data-a="lyr_next" title="Next 4 Lines">⏭</button>
       </div>
+
+      ${studioHtml}
     </div>`
   );
 }
@@ -1202,11 +1231,11 @@ function renderLyricsVideoCard() {
 function syncLyricsDisplay() {
   const stage = $('#lyr_stage');
   if (!stage || !C) return;
-  const { lines, totalStanzas, stanzaIdx, lineInStanza, cur, dur } = getActiveLyricPosition();
+  const { entries, totalStanzas, stanzaIdx, lineInStanza, cur, dur, hasExactTimestamps } = getActiveLyricPosition();
   const isPlaying = !au.paused && mOn;
 
   const badge = $('#lyr_badge');
-  if (badge) badge.textContent = `Verse ${stanzaIdx + 1} / ${totalStanzas}`;
+  if (badge) badge.textContent = `Verse ${stanzaIdx + 1} / ${totalStanzas} ${hasExactTimestamps ? '✓' : ''}`;
   const timeEl = $('#lyr_time');
   if (timeEl) timeEl.textContent = `${fmtTime(cur)} / ${fmtTime(dur)}`;
   const pfill = $('#lyr_pfill');
@@ -1216,19 +1245,23 @@ function syncLyricsDisplay() {
   const st = $('#lyr_status');
   if (st) st.textContent = isPlaying ? 'Now Singing...' : 'Paused';
 
-  // If moved to a new 4-line stanza, animate in the new 4 lines
+  // Update live timer on the Tap button if Sync Studio is open
+  const tapBtn = document.querySelector('[data-a="sync_tap"]');
+  if (tapBtn && syncCursor < entries.length) {
+    tapBtn.textContent = `🎯 TAP NOW — Mark Line #${syncCursor + 1} (${fmtTime(cur)})`;
+  }
+
   if (stanzaIdx !== lastStanzaIdx) {
     lastStanzaIdx = stanzaIdx;
-    const stanzaLines = lines.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
+    const stanzaEntries = entries.slice(stanzaIdx * 4, stanzaIdx * 4 + 4);
     stage.style.animation = 'none';
-    stage.offsetHeight; // trigger reflow for smooth fade animation
+    stage.offsetHeight;
     stage.style.animation = '';
-    stage.innerHTML = stanzaLines.map((ln, idx) => {
+    stage.innerHTML = stanzaEntries.map((en, idx) => {
       const cls = idx === lineInStanza ? 'active' : idx < lineInStanza ? 'past' : '';
-      return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(ln)}</div>`;
+      return `<div class="lyr-line ${cls}" data-lidx="${idx}">♪ ${esc(en.text)}</div>`;
     }).join('');
   } else {
-    // Highlight the current line within the active 4-line stanza
     stage.querySelectorAll('.lyr-line').forEach((el, idx) => {
       el.classList.toggle('active', idx === lineInStanza);
       el.classList.toggle('past', idx < lineInStanza);
@@ -1644,7 +1677,6 @@ const bdayAu = new Audio();
 const hintAu = new Audio();
 let mOn = true, bdayTimer = null, synthTimer = null;
 
-// Sync Lyrics Video UI on audio timeupdate, play, pause
 au.addEventListener('timeupdate', syncLyricsDisplay);
 au.addEventListener('play', syncLyricsDisplay);
 au.addEventListener('pause', syncLyricsDisplay);
@@ -2119,13 +2151,88 @@ const A = {
     }
   },
   lyr_prev() {
-    lyrOffsetLines -= 4;
+    const entries = getLyricEntries();
+    if (entries.some(e => e.time !== null)) {
+      au.currentTime = Math.max(0, (au.currentTime || 0) - 10);
+    } else {
+      lyrOffsetLines -= 4;
+    }
     syncLyricsDisplay();
   },
   lyr_next() {
-    lyrOffsetLines += 4;
+    const entries = getLyricEntries();
+    if (entries.some(e => e.time !== null)) {
+      au.currentTime = Math.min(au.duration || 319, (au.currentTime || 0) + 10);
+    } else {
+      lyrOffsetLines += 4;
+    }
     syncLyricsDisplay();
   },
+
+  // Secret 5-Tap Unlock on Verse Badge for Rivishan's Lyrics Tap-Sync Studio
+  lyr_secret() {
+    badgeTapCount++;
+    clearTimeout(badgeTapTimer);
+    badgeTapTimer = setTimeout(() => { badgeTapCount = 0; }, 1800);
+    if (badgeTapCount >= 5) {
+      badgeTapCount = 0;
+      syncMode = !syncMode;
+      const entries = getLyricEntries();
+      syncTimes = entries.map(e => e.time);
+      syncCursor = 0;
+      toast(syncMode ? '🎛️ Secret Lyrics Sync Studio Unlocked!' : '🔒 Sync Studio Closed');
+      render();
+    }
+  },
+  sync_restart() {
+    syncCursor = 0;
+    syncTimes = [];
+    mOn = true;
+    playBg(true);
+    au.currentTime = 0;
+    $('#mu').style.opacity = 1;
+    toast('🎶 Song restarted at 0:00! Tap blue button as each line starts.');
+    render();
+  },
+  sync_tap() {
+    const entries = getLyricEntries();
+    if (syncCursor >= entries.length) return;
+    if (au.paused) {
+      mOn = true;
+      playBg(true);
+    }
+    const stamp = Math.max(0, +(au.currentTime || 0).toFixed(2));
+    syncTimes[syncCursor] = stamp;
+    syncCursor++;
+    navigator.vibrate?.(40);
+    render();
+  },
+  sync_undo() {
+    if (syncCursor <= 0) return;
+    syncCursor--;
+    syncTimes[syncCursor] = null;
+    au.currentTime = Math.max(0, (au.currentTime || 0) - 4);
+    toast(`↩ Stepped back to Line #${syncCursor + 1}`);
+    render();
+  },
+  sync_save() {
+    const entries = getLyricEntries();
+    const formatted = entries.map((en, idx) => {
+      const t = syncTimes[idx] !== undefined && syncTimes[idx] !== null ? syncTimes[idx] : en.time;
+      return t !== null && t !== undefined ? `${fmtLrcTag(t)} ${en.text}` : en.text;
+    });
+    C.media.song_lyrics = formatted;
+    syncMode = false;
+    lyrOffsetLines = 0;
+    post('save_lyrics_sync', JSON.stringify(formatted));
+    toast('💾 Exact Lyric Timestamps Saved to GitHub!');
+    render();
+  },
+  sync_exit() {
+    syncMode = false;
+    render();
+  },
+
   blow() {
     const c = $('#cake');
     if (!c || c.classList.contains('off')) return;
