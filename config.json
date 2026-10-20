@@ -1,5 +1,5 @@
 {
-  "app_version": 14,
+  "app_version": 15,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -23,16 +23,16 @@
     "voice_hint_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/voice/pin_hint.mp3"
   },
   "theme_engine": {
-    "mode": "auto",
-    "custom_primary_color": "#E11D48",
+    "mode": "birthday",
+    "custom_primary_color": "#E91E63",
     "custom_secondary_color": "#38BDF8",
     "custom_bg_color": "#0B0714",
     "custom_card_color": "#161026",
     "custom_text_color": "#F8FAFC",
     "card_corner_radius": 22,
-    "falling_particle_type": "hearts",
+    "falling_particle_type": "confetti",
     "custom_wallpaper_url": "",
-    "header_title": "Rivishan & Anuki",
+    "header_title": "Happy Birthday My Queen Anuki!",
     "header_subtitle": "Together Since 2023.01.17 • Forever & Always"
   },
   "feature_toggles": {
