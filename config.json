@@ -1,5 +1,5 @@
 {
-  "app_version": 22,
+  "app_version": 23,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -257,6 +257,12 @@
       "title": "අපේ ආදරයේ සංකේතය",
       "description": "මෙක 2023 අපි යාලුවුන අලුත ඉදන්ම අපේ සංකේතය♥..",
       "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792444320122.jpg"
+    },
+    {
+      "date": "Our Pre-School Photo",
+      "title": "මොන්ටිසොරි කාලෙ අපි 🤭",
+      "description": "අපි දෙන්නා ගියෙත් එකම මොන්ටි සොරියටනෙ.♥",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792520239522.jpg"
     }
   ],
   "envelopes": [
