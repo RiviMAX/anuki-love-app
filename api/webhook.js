@@ -2279,9 +2279,12 @@ module.exports = async (req, res) => {
         // 18. SONG LYRICS (/lyrics, /addlyric, /editlyric, /dellyric)
         // --------------------------------------------------------------------
         if (cmd === '/lyrics') {
-            config.media.song_lyrics = parts.filter(Boolean);
+            const rawLines = argStr.includes('|') ? parts : argStr.split(/\r?\n/);
+            config.media.song_lyrics = rawLines
+                .map(s => s.trim())
+                .filter(s => s && !/^\*\*.*\*\*$/.test(s) && !/^\(.*\)$/.test(s));
             await updateGitHubConfig(config, sha, 'Replace song lyrics');
-            await sendTelegram(chatId, `🎶 <b>Song Lyrics Updated (${config.media.song_lyrics.length} lines)!</b>`);
+            await sendTelegram(chatId, `🎶 <b>Song Lyrics Updated (${config.media.song_lyrics.length} lines / ${Math.ceil(config.media.song_lyrics.length / 4)} stanzas)!</b>`);
             return res.status(200).send('OK');
         }
 
