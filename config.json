@@ -1,5 +1,5 @@
 {
-  "app_version": 26,
+  "app_version": 27,
   "couple_info": {
     "boy_name": "Rivishan",
     "girl_name": "Anuki",
@@ -281,6 +281,12 @@
       "title": "තවත් දවසක අපි",
       "description": "අපි මැත කාලයකදි ගත්ත එකක්.♥",
       "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792520735327.jpg"
+    },
+    {
+      "date": "Cute Photo",
+      "title": "එ දවස් වල හම්බෙන් නැතුවම බැ",
+      "description": "කැලනියෙ දවසක්🤭♥..පුලුවන් හැම වෙලෙම හම්බෙනවා.",
+      "image_url": "https://raw.githubusercontent.com/RiviMAX/anuki-love-app/main/images/img_1792520832064.jpg"
     }
   ],
   "envelopes": [
